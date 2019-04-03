@@ -27,9 +27,9 @@ class WordDetailViewController: UIViewController {
         
         var path:String
         if detailWord?.name == "acclaim"{
-            path = "file://\(bundlePath)/WordChain/a.html"
+            path = "file://\(bundlePath)/a.html"
         } else {
-            path = "file://\(bundlePath)/WordChain/b.html"
+            path = "file://\(bundlePath)/b.html"
         }
 
         
