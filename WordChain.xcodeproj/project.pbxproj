@@ -8,20 +8,26 @@
 
 /* Begin PBXBuildFile section */
 		BB09BC8D2254F232001B440F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BC8C2254F232001B440F /* AppDelegate.swift */; };
-		BB09BC8F2254F232001B440F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BC8E2254F232001B440F /* ViewController.swift */; };
 		BB09BC922254F232001B440F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB09BC902254F232001B440F /* Main.storyboard */; };
 		BB09BC942254F234001B440F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BB09BC932254F234001B440F /* Assets.xcassets */; };
 		BB09BC972254F234001B440F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB09BC952254F234001B440F /* LaunchScreen.storyboard */; };
+		BB09BCA22254F2D4001B440F /* WordDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */; };
+		BB09BCA32254F2D4001B440F /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BC9F2254F2D4001B440F /* Word.swift */; };
+		BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BCA02254F2D4001B440F /* SearchViewController.swift */; };
+		BB09BCA52254F2D4001B440F /* UserInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		BB09BC892254F232001B440F /* WordChain.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WordChain.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB09BC8C2254F232001B440F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		BB09BC8E2254F232001B440F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BB09BC912254F232001B440F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BB09BC932254F234001B440F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BB09BC962254F234001B440F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BB09BC982254F234001B440F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordDetailViewController.swift; sourceTree = "<group>"; };
+		BB09BC9F2254F2D4001B440F /* Word.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
+		BB09BCA02254F2D4001B440F /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
+		BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,10 +61,13 @@
 			isa = PBXGroup;
 			children = (
 				BB09BC8C2254F232001B440F /* AppDelegate.swift */,
-				BB09BC8E2254F232001B440F /* ViewController.swift */,
 				BB09BC902254F232001B440F /* Main.storyboard */,
 				BB09BC932254F234001B440F /* Assets.xcassets */,
 				BB09BC952254F234001B440F /* LaunchScreen.storyboard */,
+				BB09BCA02254F2D4001B440F /* SearchViewController.swift */,
+				BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */,
+				BB09BC9F2254F2D4001B440F /* Word.swift */,
+				BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */,
 				BB09BC982254F234001B440F /* Info.plist */,
 			);
 			path = WordChain;
@@ -135,8 +144,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB09BC8F2254F232001B440F /* ViewController.swift in Sources */,
+				BB09BCA52254F2D4001B440F /* UserInfoTableViewController.swift in Sources */,
 				BB09BC8D2254F232001B440F /* AppDelegate.swift in Sources */,
+				BB09BCA22254F2D4001B440F /* WordDetailViewController.swift in Sources */,
+				BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */,
+				BB09BCA32254F2D4001B440F /* Word.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -283,7 +295,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5E5TGNLN9K;
 				INFOPLIST_FILE = WordChain/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -300,7 +314,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5E5TGNLN9K;
 				INFOPLIST_FILE = WordChain/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
