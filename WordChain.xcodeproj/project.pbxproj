@@ -66,9 +66,7 @@
 			children = (
 				BB09BCA72254F8F3001B440F /* a.html */,
 				BB09BCA62254F8F3001B440F /* b.html */,
-				BB09BC8C2254F232001B440F /* AppDelegate.swift */,
-				BB09BC902254F232001B440F /* Main.storyboard */,
-				BB09BC932254F234001B440F /* Assets.xcassets */,
+				BB43320B225A375E005F6055 /* Supporting Files */,
 				BB09BC952254F234001B440F /* LaunchScreen.storyboard */,
 				BB09BCA02254F2D4001B440F /* SearchViewController.swift */,
 				BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */,
@@ -77,6 +75,16 @@
 				BB09BC982254F234001B440F /* Info.plist */,
 			);
 			path = WordChain;
+			sourceTree = "<group>";
+		};
+		BB43320B225A375E005F6055 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				BB09BC8C2254F232001B440F /* AppDelegate.swift */,
+				BB09BC902254F232001B440F /* Main.storyboard */,
+				BB09BC932254F234001B440F /* Assets.xcassets */,
+			);
+			path = "Supporting Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
