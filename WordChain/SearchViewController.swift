@@ -149,6 +149,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         filteredWords = words.filter({( word : Word) -> Bool in
             return word.name.lowercased().contains(searchText.lowercased())
         })
+        // TODO 调用py接口 获得Word数组
         
         wordTableView.reloadData()
     }
@@ -156,6 +157,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
     }
+    
     
 }
 
