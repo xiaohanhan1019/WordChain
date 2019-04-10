@@ -8,7 +8,6 @@
 
 import Foundation
 
-struct Word{
+struct Word: Codable{
     let name : String
-    let meaning : String
 }

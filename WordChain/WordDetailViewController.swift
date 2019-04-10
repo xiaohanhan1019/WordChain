@@ -11,11 +11,7 @@ import WebKit
 
 class WordDetailViewController: UIViewController {
         
-   var detailWord: Word?{
-        didSet{
-            configureView()
-        }
-    }
+   var detailWord: Word?
     
     func configureView() {
         post()
@@ -53,14 +49,16 @@ class WordDetailViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    //https://ireading.site/word/detail/?json=true&word=happen
+    //http://47.103.3.131:5000/searchWord
     func post()
     {
-        let url = URL(string: "https://ireading.site/word/detail")!
+        let url = URL(string: "http://47.103.3.131:5000/searchWord")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.addValue("json", forHTTPHeaderField: "true")
-        request.addValue("happen", forHTTPHeaderField: "word")
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let json = ["search":"claim"]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        request.httpBody = jsonData
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 print("error: \(error)")

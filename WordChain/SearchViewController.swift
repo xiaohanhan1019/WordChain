@@ -14,8 +14,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     @IBOutlet var wordTableView: UITableView!
     
     var detailViewController: WordDetailViewController? = nil
-    var words = [Word]()
-    var filteredWords = [Word]()
+    var searchResult = [Word]()
     let searchController = UISearchController(searchResultsController: nil)
     
     // MARK: - View Setup
@@ -40,11 +39,6 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         self.navigationController?.navigationBar.shadowImage = UIImage()
         //tableview空白部分无分割线
         self.wordTableView.tableFooterView = UIView()
-        
-        words = [
-            Word(name: "acclaim", meaning: "称赞"),
-            Word(name: "reclaim", meaning: "声称")
-        ]
         
         if let splitViewController = splitViewController {
             let controllers = splitViewController.viewControllers
@@ -87,23 +81,14 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFiltering() {
-            return filteredWords.count
-        }
-        
-        return words.count
+        return searchResult.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        let word: Word
-        if isFiltering() {
-            word = filteredWords[indexPath.row]
-        } else {
-            word = words[indexPath.row]
-        }
+        let word = searchResult[indexPath.row]
+
         cell.textLabel!.text = word.name
-        cell.detailTextLabel!.text = word.meaning
         return cell
     }
     
@@ -121,12 +106,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showDetail" {
             if let indexPath = wordTableView.indexPathForSelectedRow {
-                let word: Word
-                if isFiltering() {
-                    word = filteredWords[indexPath.row]
-                } else {
-                    word = words[indexPath.row]
-                }
+                let word = searchResult[indexPath.row]
                 
                 let controller = (segue.destination as! UINavigationController).topViewController as! WordDetailViewController
                 controller.detailWord = word
@@ -146,16 +126,42 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        filteredWords = words.filter({( word : Word) -> Bool in
-            return word.name.lowercased().contains(searchText.lowercased())
-        })
         // TODO 调用py接口 获得Word数组
+        post(search: searchText)
         
         wordTableView.reloadData()
     }
     
     func isFiltering() -> Bool {
         return searchController.isActive && !searchBarIsEmpty()
+    }
+    
+    //http://47.103.3.131:5000/searchWord
+    func post(search: String)
+    {
+        let url = URL(string: "http://47.103.3.131:5000/searchWord")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        let json = ["search":search]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        request.httpBody = jsonData
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                print("error: \(error)")
+            } else {
+                if let response = response as? HTTPURLResponse {
+                    print("statusCode: \(response.statusCode)")
+                }
+                if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                    print("data: \(dataString)")
+                    // TODO try!的问题
+                    // TODO 前端设置延迟,输入框变化稳定xms后发送请求
+                    self.searchResult = try! JSONDecoder().decode([Word].self, from: data)
+                }
+            }
+        }
+        task.resume()
     }
     
     
