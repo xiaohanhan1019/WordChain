@@ -15,8 +15,7 @@
 		BB09BCA32254F2D4001B440F /* Word.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BC9F2254F2D4001B440F /* Word.swift */; };
 		BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BCA02254F2D4001B440F /* SearchViewController.swift */; };
 		BB09BCA52254F2D4001B440F /* UserInfoTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */; };
-		BB09BCA82254F8F4001B440F /* b.html in Resources */ = {isa = PBXBuildFile; fileRef = BB09BCA62254F8F3001B440F /* b.html */; };
-		BB09BCA92254F8F4001B440F /* a.html in Resources */ = {isa = PBXBuildFile; fileRef = BB09BCA72254F8F3001B440F /* a.html */; };
+		BBC27B622260CBB600BC7A28 /* WordDetailHtml.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBC27B612260CBB600BC7A28 /* WordDetailHtml.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,8 +29,7 @@
 		BB09BC9F2254F2D4001B440F /* Word.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
 		BB09BCA02254F2D4001B440F /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewController.swift; sourceTree = "<group>"; };
-		BB09BCA62254F8F3001B440F /* b.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = b.html; sourceTree = "<group>"; };
-		BB09BCA72254F8F3001B440F /* a.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = a.html; sourceTree = "<group>"; };
+		BBC27B612260CBB600BC7A28 /* WordDetailHtml.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetailHtml.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,13 +62,12 @@
 		BB09BC8B2254F232001B440F /* WordChain */ = {
 			isa = PBXGroup;
 			children = (
-				BB09BCA72254F8F3001B440F /* a.html */,
-				BB09BCA62254F8F3001B440F /* b.html */,
 				BB43320B225A375E005F6055 /* Supporting Files */,
 				BB09BC952254F234001B440F /* LaunchScreen.storyboard */,
 				BB09BCA02254F2D4001B440F /* SearchViewController.swift */,
 				BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */,
 				BB09BC9F2254F2D4001B440F /* Word.swift */,
+				BBC27B612260CBB600BC7A28 /* WordDetailHtml.swift */,
 				BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */,
 				BB09BC982254F234001B440F /* Info.plist */,
 			);
@@ -145,11 +142,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BB09BCA92254F8F4001B440F /* a.html in Resources */,
 				BB09BC972254F234001B440F /* LaunchScreen.storyboard in Resources */,
 				BB09BC942254F234001B440F /* Assets.xcassets in Resources */,
 				BB09BC922254F232001B440F /* Main.storyboard in Resources */,
-				BB09BCA82254F8F4001B440F /* b.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +156,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BB09BCA52254F2D4001B440F /* UserInfoTableViewController.swift in Sources */,
+				BBC27B622260CBB600BC7A28 /* WordDetailHtml.swift in Sources */,
 				BB09BC8D2254F232001B440F /* AppDelegate.swift in Sources */,
 				BB09BCA22254F2D4001B440F /* WordDetailViewController.swift in Sources */,
 				BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */,
@@ -313,7 +309,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5E5TGNLN9K;
 				INFOPLIST_FILE = WordChain/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -332,7 +328,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5E5TGNLN9K;
 				INFOPLIST_FILE = WordChain/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

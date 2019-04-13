@@ -10,56 +10,48 @@ import UIKit
 import WebKit
 
 class WordDetailViewController: UIViewController {
-        
-   var detailWord: Word?
+
     
-    func configureView() {
-        post()
-        // TODO
-//        let wordDetailWebView = WKWebView()
-//        self.view.addSubview(wordDetailWebView)
-//        wordDetailWebView.frame = self.view.bounds
-//
-//        let bundlePath = Bundle.main.bundlePath
-//
-//        var path:String
-//        if detailWord?.name == "acclaim"{
-//            path = "file://\(bundlePath)/a.html"
-//        } else {
-//            path = "file://\(bundlePath)/b.html"
-//        }
-//
-//
-//        guard let url = URL(string: path) else {
-//            return
-//        }
-//
-//        let request = URLRequest(url: url)
-//
-//        wordDetailWebView.load(request)
-        
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        configureView()
-    }
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
+    var detailWord: Word?
+    var html: String?
+    var css: String?
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    func configureView() {
+        let wordDetailWebView = WKWebView()
+        self.view.addSubview(wordDetailWebView)
+        wordDetailWebView.frame = self.view.bounds
+        if let html = html , let css = css {
+            self.spinner.stopAnimating()
+            wordDetailWebView.loadHTMLString(css+html, baseURL: nil)
+        }
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        self.spinner.startAnimating()
+        getDetail(word: detailWord!.name)
+    }
+    
     //http://47.103.3.131:5000/searchWord
-    func post()
+    func getDetail(word: String)
     {
-        let url = URL(string: "http://47.103.3.131:5000/searchWord")!
+        let session = URLSession(configuration: .default)
+        
+        let json = ["word":word]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        
+        let url = URL(string: "http://47.103.3.131:5000/wordDetail")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let json = ["search":"claim"]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
         request.httpBody = jsonData
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        let task = session.dataTask(with: request) { (data: Data?, response, error) in
             if let error = error {
                 print("error: \(error)")
             } else {
@@ -68,6 +60,12 @@ class WordDetailViewController: UIViewController {
                 }
                 if let data = data, let dataString = String(data: data, encoding: .utf8) {
                     print("data: \(dataString)")
+                    let wordDetailHtml = try! JSONDecoder().decode(WordDetailHtml.self, from: data)
+                    self.html = wordDetailHtml.html
+                    self.css = wordDetailHtml.css
+                    DispatchQueue.main.async {
+                        self.configureView()
+                    }
                 }
             }
         }

@@ -126,10 +126,9 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func filterContentForSearchText(_ searchText: String, scope: String = "All") {
-        // TODO 调用py接口 获得Word数组
-        post(search: searchText)
-        
-        wordTableView.reloadData()
+        if !searchText.isEmpty {
+            searchWords(search: searchText)
+        }
     }
     
     func isFiltering() -> Bool {
@@ -137,16 +136,20 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     //http://47.103.3.131:5000/searchWord
-    func post(search: String)
+    func searchWords(search: String)
     {
+        let session = URLSession(configuration: .default)
+        
+        let json = ["search":search]
+        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+        
         let url = URL(string: "http://47.103.3.131:5000/searchWord")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        let json = ["search":search]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
         request.httpBody = jsonData
-        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+        
+        let task = session.dataTask(with: request) { (data: Data?, response, error) in
             if let error = error {
                 print("error: \(error)")
             } else {
@@ -156,8 +159,12 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
                 if let data = data, let dataString = String(data: data, encoding: .utf8) {
                     print("data: \(dataString)")
                     // TODO try!的问题
-                    // TODO 前端设置延迟,输入框变化稳定xms后发送请求
+                    // TODO 前端设置延迟,输入框变化稳定xxxms后发送请求
+                    // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
                     self.searchResult = try! JSONDecoder().decode([Word].self, from: data)
+                    DispatchQueue.main.async {
+                        self.wordTableView.reloadData()
+                    }
                 }
             }
         }
