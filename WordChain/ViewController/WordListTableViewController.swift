@@ -1,47 +1,81 @@
 //
-//  UserInfoTableViewController.swift
+//  WordListTableViewController.swift
 //  WordChain
 //
-//  Created by xiaohanhan on 2019/4/2.
+//  Created by xiaohanhan on 2019/4/14.
 //  Copyright © 2019 xiaohanhan. All rights reserved.
 //
 
 import UIKit
 
-class UserInfoTableViewController: UITableViewController {
+class WordListTableViewController: UITableViewController {
     
-    
-    @IBOutlet var userInfoTableView: UITableView!
-    
+    var wordLists = [[WordList]]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //tableview空白部分无分割线
+        self.tableView.tableFooterView = UIView()
 
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem
+        let word1 = Word(name: "apple")
+        let word2 = Word(name: "ios")
+        let word3 = Word(name: "mac")
+        let wordList1 = WordList(name:"test", words: [word1,word2])
+        let wordList2 = WordList(name:"test2", words: [word2,word3])
+        let wordList3 = WordList(name:"test3", words: [word2,word3])
+        var wordLists1 = [WordList]()
+        wordLists1.append(wordList1)
+        wordLists1.append(wordList2)
+        
+        var wordLists2 = [WordList]()
+        wordLists2.append(wordList3)
+        
+        wordLists.append(wordLists1)
+        wordLists.append(wordLists2)
+        
+        self.tableView.reloadData()
     }
 
     // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        // #warning Incomplete implementation, return the number of sections
+        return wordLists.count
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        // #warning Incomplete implementation, return the number of rows
+        return wordLists[section].count
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return "Section \(section)"
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 32.0
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 32.0
     }
 
-    /*
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "reuseIdentifier", for: indexPath)
-
-        // Configure the cell...
-
+        let wordList = wordLists[indexPath.section][indexPath.row]
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "wordListCell", for: indexPath)
+        if let wordListCell = cell as? WordListCell {
+            wordListCell.wordList = wordList
+        }
+        
         return cell
     }
-    */
 
     /*
     // Override to support conditional editing of the table view.

@@ -51,9 +51,10 @@ class WordDetailViewController: UIViewController {
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
-        let task = session.dataTask(with: request) { (data: Data?, response, error) in
+        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
             if let error = error {
                 print("error: \(error)")
+                // TODO 获取不到UI反馈
             } else {
                 if let response = response as? HTTPURLResponse {
                     print("statusCode: \(response.statusCode)")
@@ -61,10 +62,10 @@ class WordDetailViewController: UIViewController {
                 if let data = data, let dataString = String(data: data, encoding: .utf8) {
                     print("data: \(dataString)")
                     let wordDetailHtml = try! JSONDecoder().decode(WordDetailHtml.self, from: data)
-                    self.html = wordDetailHtml.html
-                    self.css = wordDetailHtml.css
+                    self?.html = wordDetailHtml.html
+                    self?.css = wordDetailHtml.css
                     DispatchQueue.main.async {
-                        self.configureView()
+                        self?.configureView()
                     }
                 }
             }

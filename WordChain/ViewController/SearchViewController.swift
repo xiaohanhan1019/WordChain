@@ -10,36 +10,39 @@ import UIKit
 
 class SearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISplitViewControllerDelegate, UISearchBarDelegate{
     
-    // MARK: - Properties
     @IBOutlet var wordTableView: UITableView!
     
     var detailViewController: WordDetailViewController? = nil
     var searchResult = [Word]()
     let searchController = UISearchController(searchResultsController: nil)
     
-    // MARK: - View Setup
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationItem.title = "Word Chain"
-        
-        // Setup the Search Controller
+        // 搜索框设置
         searchController.searchResultsUpdater = self
         searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search"
         searchController.searchBar.searchBarStyle = .minimal
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.delegate = self
-        
+        // 导航栏颜色
+        if let navigationbar = self.navigationController?.navigationBar {
+            navigationbar.barTintColor = UIColor.white
+        }
+        // 导航栏设置
         navigationItem.titleView = searchController.searchBar
         navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
         
         //去除导航栏下边框
         self.navigationController?.navigationBar.shadowImage = UIImage()
+        
         //tableview空白部分无分割线
         self.wordTableView.tableFooterView = UIView()
         
+        // splitView
         if let splitViewController = splitViewController {
             let controllers = splitViewController.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? WordDetailViewController
@@ -75,7 +78,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         super.didReceiveMemoryWarning()
     }
     
-    // MARK: - Table View
+    // MARK: - Table View DataSoure
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -85,10 +88,13 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         let word = searchResult[indexPath.row]
 
-        cell.textLabel!.text = word.name
+        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell", for: indexPath)
+        if let searchCell = cell as? SearchCell {
+            searchCell.word = word
+        }
+
         return cell
     }
     
@@ -119,13 +125,11 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         }
     }
     
-    // MARK: - Private instance methods
     func searchBarIsEmpty() -> Bool {
-        // Returns true if the text is empty or nil
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
-    func filterContentForSearchText(_ searchText: String, scope: String = "All") {
+    func filterContentForSearchText(_ searchText: String) {
         if !searchText.isEmpty {
             searchWords(search: searchText)
         }
@@ -149,7 +153,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = jsonData
         
-        let task = session.dataTask(with: request) { (data: Data?, response, error) in
+        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
             if let error = error {
                 print("error: \(error)")
             } else {
@@ -161,9 +165,9 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
                     // TODO try!的问题
                     // TODO 前端设置延迟,输入框变化稳定xxxms后发送请求
                     // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
-                    self.searchResult = try! JSONDecoder().decode([Word].self, from: data)
+                    self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
                     DispatchQueue.main.async {
-                        self.wordTableView.reloadData()
+                        self?.wordTableView.reloadData()
                     }
                 }
             }
