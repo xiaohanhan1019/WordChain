@@ -27,17 +27,15 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         searchController.searchBar.searchBarStyle = .minimal
         searchController.hidesNavigationBarDuringPresentation = false
         searchController.searchBar.delegate = self
-        // 导航栏颜色
-        if let navigationbar = self.navigationController?.navigationBar {
-            navigationbar.barTintColor = UIColor.white
-        }
+
         // 导航栏设置
         navigationItem.titleView = searchController.searchBar
         navigationItem.hidesSearchBarWhenScrolling = true
         definesPresentationContext = true
         
-        //去除导航栏下边框
+        //去除导航栏下边框,设置颜色
         self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
         
         //tableview空白部分无分割线
         self.wordTableView.tableFooterView = UIView()

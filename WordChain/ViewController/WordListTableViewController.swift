@@ -18,6 +18,10 @@ class WordListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //去除导航栏下边框,设置颜色
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
+        
         getUserWordList()
         getUserLikedWordList()
     }

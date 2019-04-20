@@ -25,6 +25,9 @@ class WordListDetailTableViewController: UITableViewController {
         wordListInfoLabel.text = "testetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkn"
         wordListOwnerNameLabel.text = "xiaohanhan"
         
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
+        
         self.tableView.tableFooterView = UIView()
         self.tableView.reloadData()
     }
