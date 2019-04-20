@@ -19,8 +19,12 @@
 		BB5C05AF226375D60076011B /* WordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05AE226375D60076011B /* WordList.swift */; };
 		BB5C05B12263786E0076011B /* WordListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05B02263786E0076011B /* WordListCell.swift */; };
 		BB5C05B3226379430076011B /* WordListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05B2226379430076011B /* WordListTableViewController.swift */; };
-		BB7A6CF92262E800001895DA /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB7A6CF82262E800001895DA /* SearchCell.swift */; };
+		BB5C05B92266DA180076011B /* WordListDetailTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05B82266DA170076011B /* WordListDetailTableViewController.swift */; };
+		BB5C05BB226865960076011B /* WordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05BA226865960076011B /* WordCell.swift */; };
+		BB64BB4C2269F71900D13B4C /* MainTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB64BB4B2269F71900D13B4C /* MainTabBarController.swift */; };
+		BB64BB4E2269F91800D13B4C /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB64BB4D2269F91800D13B4C /* LoginViewController.swift */; };
 		BBC27B622260CBB600BC7A28 /* WordDetailHtml.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBC27B612260CBB600BC7A28 /* WordDetailHtml.swift */; };
+		BBE0FC01226AE4250095B35B /* RegisterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBE0FC00226AE4250095B35B /* RegisterViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,8 +42,12 @@
 		BB5C05AE226375D60076011B /* WordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WordList.swift; path = ../WordList.swift; sourceTree = "<group>"; };
 		BB5C05B02263786E0076011B /* WordListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListCell.swift; sourceTree = "<group>"; };
 		BB5C05B2226379430076011B /* WordListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListTableViewController.swift; sourceTree = "<group>"; };
-		BB7A6CF82262E800001895DA /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		BB5C05B82266DA170076011B /* WordListDetailTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListDetailTableViewController.swift; sourceTree = "<group>"; };
+		BB5C05BA226865960076011B /* WordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordCell.swift; sourceTree = "<group>"; };
+		BB64BB4B2269F71900D13B4C /* MainTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabBarController.swift; sourceTree = "<group>"; };
+		BB64BB4D2269F91800D13B4C /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		BBC27B612260CBB600BC7A28 /* WordDetailHtml.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordDetailHtml.swift; sourceTree = "<group>"; };
+		BBE0FC00226AE4250095B35B /* RegisterViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,7 +115,7 @@
 			isa = PBXGroup;
 			children = (
 				BB5C05B02263786E0076011B /* WordListCell.swift */,
-				BB7A6CF82262E800001895DA /* SearchCell.swift */,
+				BB5C05BA226865960076011B /* WordCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -115,10 +123,14 @@
 		BB5C05B7226384CF0076011B /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				BB64BB4D2269F91800D13B4C /* LoginViewController.swift */,
+				BBE0FC00226AE4250095B35B /* RegisterViewController.swift */,
+				BB64BB4B2269F71900D13B4C /* MainTabBarController.swift */,
 				BB09BCA02254F2D4001B440F /* SearchViewController.swift */,
-				BB5C05B2226379430076011B /* WordListTableViewController.swift */,
-				BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */,
 				BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */,
+				BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */,
+				BB5C05B2226379430076011B /* WordListTableViewController.swift */,
+				BB5C05B82266DA170076011B /* WordListDetailTableViewController.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
@@ -194,17 +206,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BB64BB4E2269F91800D13B4C /* LoginViewController.swift in Sources */,
 				BB5C05B3226379430076011B /* WordListTableViewController.swift in Sources */,
 				BB09BCA52254F2D4001B440F /* UserInfoTableViewController.swift in Sources */,
 				BBC27B622260CBB600BC7A28 /* WordDetailHtml.swift in Sources */,
 				BB09BC8D2254F232001B440F /* AppDelegate.swift in Sources */,
-				BB7A6CF92262E800001895DA /* SearchCell.swift in Sources */,
+				BB5C05B92266DA180076011B /* WordListDetailTableViewController.swift in Sources */,
+				BBE0FC01226AE4250095B35B /* RegisterViewController.swift in Sources */,
 				BB5C05AD2263664D0076011B /* User.swift in Sources */,
 				BB5C05B12263786E0076011B /* WordListCell.swift in Sources */,
+				BB64BB4C2269F71900D13B4C /* MainTabBarController.swift in Sources */,
 				BB09BCA22254F2D4001B440F /* WordDetailViewController.swift in Sources */,
 				BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */,
 				BB09BCA32254F2D4001B440F /* Word.swift in Sources */,
 				BB5C05AF226375D60076011B /* WordList.swift in Sources */,
+				BB5C05BB226865960076011B /* WordCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

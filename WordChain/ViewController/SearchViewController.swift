@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISplitViewControllerDelegate, UISearchBarDelegate{
+class SearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate{
     
     @IBOutlet var wordTableView: UITableView!
     
@@ -41,41 +41,6 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         
         //tableview空白部分无分割线
         self.wordTableView.tableFooterView = UIView()
-        
-        // splitView
-        if let splitViewController = splitViewController {
-            let controllers = splitViewController.viewControllers
-            detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? WordDetailViewController
-        }
-    }
-    
-    // 解决刚开应用进入detail问题
-    override func awakeFromNib() {
-        splitViewController?.delegate = self
-    }
-    
-    // MARK: - Split view
-    func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController:UIViewController, onto primaryViewController:UIViewController) -> Bool {
-        guard let secondaryAsNavController = secondaryViewController as? UINavigationController else { return false }
-        guard let topAsDetailController = secondaryAsNavController.topViewController as? WordDetailViewController else { return false }
-        if topAsDetailController.detailWord == nil {
-            // Return true to indicate that we have handled the collapse by doing nothing; the secondary controller will be discarded.
-            return true
-        }
-        return false
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        if splitViewController!.isCollapsed {
-            if let selectionIndexPath = self.wordTableView.indexPathForSelectedRow {
-                self.wordTableView.deselectRow(at: selectionIndexPath, animated: animated)
-            }
-        }
-        super.viewWillAppear(animated)
-    }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
     }
     
     // MARK: - Table View DataSoure
@@ -90,12 +55,17 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let word = searchResult[indexPath.row]
 
-        let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell", for: indexPath)
-        if let searchCell = cell as? SearchCell {
-            searchCell.word = word
+        let cell = tableView.dequeueReusableCell(withIdentifier: "WordCell", for: indexPath)
+        if let wordCell = cell as? WordCell {
+            wordCell.word = word
         }
 
         return cell
+    }
+    
+    // 返回时取消选中
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        wordTableView.deselectRow(at: indexPath, animated: true)
     }
     
     // 点击cancel隐藏tableview
@@ -114,13 +84,11 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
             if let indexPath = wordTableView.indexPathForSelectedRow {
                 let word = searchResult[indexPath.row]
                 
-                let controller = (segue.destination as! UINavigationController).topViewController as! WordDetailViewController
+                let controller = (segue.destination) as! WordDetailViewController
                 controller.detailWord = word
-                controller.navigationItem.leftBarButtonItem = splitViewController?.displayModeButtonItem
                 // 设置返回键文字
                 let item = UIBarButtonItem(title: word.name, style: .plain, target: self, action: nil)
                 self.navigationItem.backBarButtonItem = item
-                controller.navigationItem.leftItemsSupplementBackButton = true
             }
         }
     }
@@ -163,7 +131,6 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
                 if let data = data, let dataString = String(data: data, encoding: .utf8) {
                     print("data: \(dataString)")
                     // TODO try!的问题
-                    // TODO 前端设置延迟,输入框变化稳定xxxms后发送请求
                     // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
                     self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
                     DispatchQueue.main.async {

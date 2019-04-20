@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct WordList {
-    let name : String
-    let words : [Word]
+struct WordList: Codable {
+    let name: String
+    let words: [Word]
 }
