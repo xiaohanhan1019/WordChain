@@ -40,14 +40,14 @@
 		BB09BC962254F234001B440F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BB09BC982254F234001B440F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BB09BC9E2254F2D4001B440F /* WordDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordDetailViewController.swift; sourceTree = "<group>"; };
-		BB09BC9F2254F2D4001B440F /* Word.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Word.swift; path = ../Word.swift; sourceTree = "<group>"; };
+		BB09BC9F2254F2D4001B440F /* Word.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Word.swift; sourceTree = "<group>"; };
 		BB09BCA02254F2D4001B440F /* SearchViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		BB09BCA12254F2D4001B440F /* UserInfoTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfoTableViewController.swift; sourceTree = "<group>"; };
 		BB393115226C13A40041F525 /* UserSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingTableViewController.swift; sourceTree = "<group>"; };
 		BB393117226C1CA30041F525 /* EditUserNicknameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserNicknameViewController.swift; sourceTree = "<group>"; };
 		BB39311F226DBA560041F525 /* EditUserStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserStatusViewController.swift; sourceTree = "<group>"; };
-		BB5C05AC2263664D0076011B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = User.swift; path = ../User.swift; sourceTree = "<group>"; };
-		BB5C05AE226375D60076011B /* WordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WordList.swift; path = ../WordList.swift; sourceTree = "<group>"; };
+		BB5C05AC2263664D0076011B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		BB5C05AE226375D60076011B /* WordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordList.swift; sourceTree = "<group>"; };
 		BB5C05B02263786E0076011B /* WordListCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListCell.swift; sourceTree = "<group>"; };
 		BB5C05B2226379430076011B /* WordListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListTableViewController.swift; sourceTree = "<group>"; };
 		BB5C05B82266DA170076011B /* WordListDetailTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListDetailTableViewController.swift; sourceTree = "<group>"; };
