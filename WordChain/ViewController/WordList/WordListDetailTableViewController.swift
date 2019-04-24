@@ -19,12 +19,13 @@ class WordListDetailTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        wordListCoverImageView.downloadedFrom(link: "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1555944871&di=45dccd9aa19e79602a26e866d9f0c283&imgtype=jpg&er=1&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201610%2F21%2F20161021114501_kKusd.jpeg", cornerRadius: 15)
+        wordListCoverImageView.downloadedFrom(link: "http://47.103.3.131/2.jpg", cornerRadius: 15)
         wordListNameLabel.text = wordList.name
         wordListOwnerImageView.downloadedFrom(link: "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1555944871&di=45dccd9aa19e79602a26e866d9f0c283&imgtype=jpg&er=1&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201610%2F21%2F20161021114501_kKusd.jpeg", cornerRadius: 14)
         wordListInfoLabel.text = "testetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkntestetstetasddfhakdhfkjasdfkn"
         wordListOwnerNameLabel.text = "xiaohanhan"
         
+        //导航栏颜色，去掉分割线
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class SearchViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate{
     
@@ -106,39 +107,59 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     }
     
     //http://47.103.3.131:5000/searchWord
-    func searchWords(search: String)
-    {
-        let session = URLSession(configuration: .default)
-        
-        let json = ["search":search]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        
-        let url = URL(string: "http://47.103.3.131:5000/searchWord")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        
-        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
-            if let error = error {
-                print("error: \(error)")
-            } else {
-                if let response = response as? HTTPURLResponse {
-                    print("statusCode: \(response.statusCode)")
-                }
-                if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                    print("data: \(dataString)")
-                    // TODO try!的问题
-                    // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
-                    self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
-                    DispatchQueue.main.async {
-                        self?.wordTableView.reloadData()
-                    }
+    func searchWords(search: String) {
+        let parameters = ["search": search]
+        let request = "http://47.103.3.131:5000/searchWord"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+    
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            let statusCode = response.response?.statusCode
+            if statusCode == 200, let data = response.data {
+                // TODO try!的问题
+                // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
+                self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
+                DispatchQueue.main.async {
+                    self?.wordTableView.reloadData()
                 }
             }
         }
-        task.resume()
     }
+    
+//    //http://47.103.3.131:5000/searchWord
+//    func searchWords(search: String)
+//    {
+//        let session = URLSession(configuration: .default)
+//
+//        let json = ["search":search]
+//        let jsonData = try? JSONSerialization.data(withJSONObject: json)
+//
+//        let url = URL(string: "http://47.103.3.131:5000/searchWord")!
+//        var request = URLRequest(url: url)
+//        request.httpMethod = "POST"
+//        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+//        request.httpBody = jsonData
+//
+//        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
+//            if let error = error {
+//                print("error: \(error)")
+//            } else {
+//                if let response = response as? HTTPURLResponse {
+//                    print("statusCode: \(response.statusCode)")
+//                }
+//                if let data = data, let dataString = String(data: data, encoding: .utf8) {
+//                    print("data: \(dataString)")
+//                    // TODO try!的问题
+//                    // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
+//                    self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
+//                    DispatchQueue.main.async {
+//                        self?.wordTableView.reloadData()
+//                    }
+//                }
+//            }
+//        }
+//        task.resume()
+//    }
     
     
 }

@@ -7,20 +7,33 @@
 //
 
 import UIKit
+import Alamofire
 
 class WordListTableViewController: UITableViewController {
     
     var userWordLists = [WordList]()
     var userLikedWordLists = [WordList]()
-    // todo 信号量保证两个数据获取顺序，其实可以同时获取吧？
+    
     let semaphore = DispatchSemaphore(value: 1)
-
+    
+    var spinner: UIActivityIndicatorView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //去除导航栏下边框,设置颜色
+        // 去除导航栏下边框,设置颜色
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
+        
+        // 绘制spinner
+        spinner = UIActivityIndicatorView(style: .whiteLarge)
+        spinner.backgroundColor = UIColor.darkGray
+        spinner.layer.cornerRadius = 16
+        spinner.frame = CGRect(x: 0, y: 0, width: 64, height: 64)
+        spinner.center.x = self.view.center.x
+        spinner.center.y = self.view.center.y-100
+        self.view.addSubview(spinner)
+        spinner.startAnimating()
         
         getUserWordList()
         getUserLikedWordList()
@@ -28,24 +41,25 @@ class WordListTableViewController: UITableViewController {
     
     func updateUI() {
         self.tableView.reloadData()
+        self.spinner.stopAnimating()
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 2
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         switch section{
-            case 0:
-                return userWordLists.count
-            case 1:
-                return userLikedWordLists.count
-            default:
-                return 0
+        case 0:
+            return userWordLists.count
+        case 1:
+            return userLikedWordLists.count
+        default:
+            return 0
         }
     }
     
@@ -66,16 +80,16 @@ class WordListTableViewController: UITableViewController {
     }
     
     // 修改footerView颜色
-//    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-//        let footerView = UIView()
-//        footerView.backgroundColor = UIColor.red
-//        return footerView
-//    }
+    //    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+    //        let footerView = UIView()
+    //        footerView.backgroundColor = UIColor.red
+    //        return footerView
+    //    }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 32.0
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         var wordList: WordList
         
@@ -93,7 +107,7 @@ class WordListTableViewController: UITableViewController {
         
         return cell
     }
-
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showWordListDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
@@ -106,81 +120,59 @@ class WordListTableViewController: UITableViewController {
                 
                 let controller = (segue.destination) as! WordListDetailTableViewController
                 controller.wordList = wordList
+                
+                //去掉后退键文字
+                let item = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                self.navigationItem.backBarButtonItem = item
             }
         }
     }
     
     //获取用户创建的单词表
     //http://47.103.3.131:5000/getAllUserWordList
-    func getUserWordList()
-    {
-        let session = URLSession(configuration: .default)
-        
+    // 应该可以同时获取数据,但python那边有些问题,所以这里用信号量实现串行
+    func getUserWordList() {
         let userId = UserDefaults.standard.integer(forKey: "userId")
+        let parameters = ["user_id": userId]
+        let request = "http://47.103.3.131:5000/getAllUserWordList"
         
-        let json = ["user_id":userId]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        
-        let url = URL(string: "http://47.103.3.131:5000/getAllUserWordList")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        semaphore.wait()
-        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
-            if let error = error {
-                print("error: \(error)")
-                // TODO 获取不到UI反馈
-            } else {
-                if let response = response as? HTTPURLResponse {
-                    print("statusCode: \(response.statusCode)")
-                }
-                if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                    print("data: \(dataString)")
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("Data: \(utf8Text)")
                     self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
                 }
+                
+                self?.semaphore.signal()
             }
-            self?.semaphore.signal()
         }
-        task.resume()
     }
     
     // 获取用户收藏单词表
     //http://47.103.3.131:5000/getAllUserLikedWordList
     func getUserLikedWordList(){
-        let session = URLSession(configuration: .default)
-        
         let userId = UserDefaults.standard.integer(forKey: "userId")
+        let parameters = ["user_id": userId]
+        let request = "http://47.103.3.131:5000/getAllUserLikedWordList"
         
-        let json = ["user_id":userId]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        
-        let url = URL(string: "http://47.103.3.131:5000/getAllUserLikedWordList")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        semaphore.wait()
-        let task = session.dataTask(with: request) { [weak self] (data: Data?, response, error) in
-            if let error = error {
-                print("error: \(error)")
-                // TODO 获取不到UI反馈
-            } else {
-                if let response = response as? HTTPURLResponse {
-                    print("statusCode: \(response.statusCode)")
-                }
-                if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                    print("data: \(dataString)")
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("Data: \(utf8Text)")
                     self?.userLikedWordLists = try! JSONDecoder().decode([WordList].self, from: data)
-                    
-                    DispatchQueue.main.async {
-                        self?.updateUI()
-                    }
                 }
+                
+                DispatchQueue.main.async {
+                    self?.updateUI()
+                }
+                
+                self?.semaphore.signal()
             }
-            self?.semaphore.signal()
         }
-        task.resume()
     }
-
+    
 }

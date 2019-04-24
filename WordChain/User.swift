@@ -9,6 +9,8 @@
 import Foundation
 
 struct User: Codable{
-    let nickname : String
+    var nickname : String
     let id : Int
+    var status: String
+    var image_url: String
 }
