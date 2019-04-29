@@ -36,7 +36,7 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let wordList = WordList(name: "aaa", words: [Word(name: "apple"), Word(name: "peach")])
+        let wordList = WordList(id: 0, name: "aaa", words: [Word(name: "apple", meaning: "苹果", id: 0)], image_url: "", description: "", ownerImage_url: "", ownerName: "", user_id: 0)
         userWordLists.append(wordList)
         
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -58,7 +58,7 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         
         //初始化要用到的参数
         let WIDTH = self.view.frame.width
-        let HEIGHT = self.view.frame.height - 88 - 30 - 180 - 5
+        let HEIGHT = self.view.frame.height - 88 - 30 - 196 - 5
         
         //设置 tab 标签面板底部阴影
         self.tabPanel.layer.shadowColor = UIColor.white.cgColor
@@ -83,6 +83,7 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         self.wordListTableView.delegate = self
         self.wordListTableView.dataSource = self
         self.wordListTableView.tableFooterView = UIView()
+        self.wordListTableView.separatorStyle = .none
         
         //设置 tableViewRight delegate，并消除多余分割线
         self.momentTableView.delegate = self
@@ -105,7 +106,11 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     
     func updateUI(){
         // 没有头像用默认的
-        userImageView.downloadedFrom(link: user?.image_url ?? "http://47.103.3.131/default.jpg", cornerRadius: 75)
+        if user?.image_url == "" {
+            userImageView.downloadedFrom(link: "http://47.103.3.131/default.jpg", cornerRadius: 75)
+        } else {
+            userImageView.downloadedFrom(link: user?.image_url ?? "http://47.103.3.131/default.jpg", cornerRadius: 75)
+        }
         userStatusLabel.text = user?.status
         userNameLabel.text = user?.nickname
         

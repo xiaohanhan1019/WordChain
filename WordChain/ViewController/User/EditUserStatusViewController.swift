@@ -37,6 +37,8 @@ class EditUserStatusViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.title = "修改签名"
+
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.save))
         statusTextField.text = previousStatus
         numberOfCharsLabel.text = String("\(numberOfChars)/30")

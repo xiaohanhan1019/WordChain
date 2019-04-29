@@ -115,9 +115,8 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
             
             let statusCode = response.response?.statusCode
-            if statusCode == 200, let data = response.data {
-                // TODO try!的问题
-                // TODO 手机里应该有内置的数据库,用来搜索显示解释以及用户的一些数据(查询了多少次)
+            if statusCode == 200, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                print(utf8Text)
                 self?.searchResult = try! JSONDecoder().decode([Word].self, from: data)
                 DispatchQueue.main.async {
                     self?.wordTableView.reloadData()

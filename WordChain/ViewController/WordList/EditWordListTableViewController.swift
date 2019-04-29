@@ -1,63 +1,68 @@
 //
-//  UserSettingTableViewController.swift
+//  EditWordListTableViewController.swift
 //  WordChain
 //
-//  Created by xiaohanhan on 2019/4/21.
+//  Created by xiaohanhan on 2019/4/25.
 //  Copyright © 2019 xiaohanhan. All rights reserved.
 //
 
 import UIKit
 import Alamofire
 
-class UserSettingTableViewController: UITableViewController, paramNicknameDelegate, paramStatusDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
+protocol paramWordListDelegate {
+    func returnWordListInfo(name: String, description: String,cover: UIImage)
+}
+
+class EditWordListTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, paramWordListNameDelegate, paramWordListDescriptionDelegate {
     
-    func returnStatus(status: String) {
-        user?.status = status
+    func returnName(name: String) {
+        wordList?.name = name
     }
     
-    func returnNickname(nickname: String) {
-        user?.nickname = nickname
+    func returnDescription(description: String) {
+        wordList?.description = description
     }
     
-    var user: User? = nil
-    // 多余的
-    var userImage: UIImage? = nil
+    var wordList: WordList? = nil
+    var wordListImage: UIImage? = nil
     
-    @IBOutlet weak var userImageView: UIImageView!
-    @IBOutlet weak var userNicknameLabel: UILabel!
-    @IBOutlet weak var userStatusLabel: UILabel!
+    var delegate: paramWordListDelegate?
+    
+    @IBOutlet weak var wordListCoverImageView: UIImageView!
+    @IBOutlet weak var wordListNameLabel: UILabel!
+    @IBOutlet weak var wordListDescriptionLabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = "设置"
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        let userId = UserDefaults.standard.integer(forKey: "userId")
-        getUserInfo(userId: userId)
-    }
-    
-    @IBAction func logout(_ sender: Any) {
-        // TODO 这样退出登录后 如果按左上角叉 获取不到userId会闪退
-        UserDefaults.standard.removeObject(forKey: "userId")
-        // 显示登录页
-        let sb = UIStoryboard(name: "Main", bundle:nil)
-        let vc = sb.instantiateViewController(withIdentifier: "login") as! UINavigationController
-        self.present(vc, animated: true, completion: nil)
+        self.title = "编辑词单信息"
+        self.tableView.tableFooterView = UIView()
     }
     
     func updateUI() {
-        if user?.image_url == "" {
-            userImageView.downloadedFrom(link: "http://47.103.3.131/default.jpg", cornerRadius: 60)
+        if wordList?.image_url == "" {
+            wordListCoverImageView.downloadedFrom(link: "http://47.103.3.131/default.jpg", cornerRadius: 60)
         } else {
-            userImageView.downloadedFrom(link: user?.image_url ?? "http://47.103.3.131/default.jpg", cornerRadius: 60)
+            wordListCoverImageView.downloadedFrom(link: wordList?.image_url ?? "http://47.103.3.131/default.jpg", cornerRadius: 60)
         }
-        userNicknameLabel.text = user?.nickname
-        userStatusLabel.text = user?.status
+        wordListNameLabel.text = wordList?.name
+        wordListDescriptionLabel.text = wordList?.description
     }
     
-    @IBAction func changeImage(_ sender: Any) {
+    override func viewWillAppear(_ animated: Bool) {
+        updateUI()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.delegate?.returnWordListInfo(name: wordList!.name, description: wordList!.description, cover: wordListCoverImageView.image!)
+    }
+    
+    // 返回时取消选中
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.tableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    @IBAction func changeCover(_ sender: Any) {
         let alert = UIAlertController()
         let cleanAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)
         let choosePhotoAction = UIAlertAction(title: "从手机相册选择", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
@@ -84,9 +89,9 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
         
         if let imageBase64String = imageData?.base64EncodedString() {
             // postImage
-            let userId = UserDefaults.standard.integer(forKey: "userId")
-            let parameters = ["image": imageBase64String, "user_id": userId] as [String : Any]
-            let request = "http://47.103.3.131:5000/postUserImage"
+            let wordListId = wordList?.id
+            let parameters = ["image": imageBase64String, "wordList_id": wordListId!] as [String : Any]
+            let request = "http://47.103.3.131:5000/postWordListImage"
             let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
             
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
@@ -100,9 +105,10 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
                                     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                                         alertToast.dismiss(animated: true) {
                                             // 修改头像
-                                            self?.userImageView.image = pickedImage.crop(ratio: 1.0)
-                                            self?.userImageView.layer.cornerRadius = 60
-                                            self?.userImageView.clipsToBounds = true
+                                            self?.delegate?.returnWordListInfo(name: (self?.wordList!.name)!, description: (self?.wordList!.description)!, cover: pickedImage)
+                                            self?.wordListCoverImageView.image = pickedImage.crop(ratio: 1.0)
+                                            self?.wordListCoverImageView.layer.cornerRadius = 60
+                                            self?.wordListCoverImageView.clipsToBounds = true
                                         }
                                     }
                                 }
@@ -129,50 +135,30 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
             }
         }
     }
-    
-    // MARK: - Table view data source
 
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
+        // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        // #warning Incomplete implementation, return the number of rows
+        return 2
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "editNickname" {
-            let controller = (segue.destination) as! EditUserNicknameViewController
+        if segue.identifier == "editWordListName" {
+            let controller = (segue.destination) as! EditWordListNameViewController
             controller.delegate = self
-            controller.previousNickname = self.userNicknameLabel.text ?? ""
-        } else if segue.identifier == "editStatus" {
-            let controller = (segue.destination) as! EditUserStatusViewController
+            controller.previousWordListName = self.wordListNameLabel.text ?? ""
+            controller.wordListId = wordList?.id
+        } else if segue.identifier == "editWordListDescription" {
+            let controller = (segue.destination) as! EditWordListDescriptionViewController
             controller.delegate = self
-            controller.previousStatus = self.userStatusLabel.text ?? ""
+            controller.previousWordListDescription = self.wordListDescriptionLabel.text ?? ""
+            controller.wordListId = wordList?.id
         }
     }
-    
-    // 返回时取消选中
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    //http://47.103.3.131:5000/getUserInfo
-    func getUserInfo(userId: Int) {
-        let parameters = ["user_id": userId]
-        let request = "http://47.103.3.131:5000/getUserInfo"
-        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
-        
-        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)")
-                self?.user = try! JSONDecoder().decode(User.self, from: data)
-                DispatchQueue.main.async {
-                    self?.updateUI()
-                }
-            }
-        }
-    }
-    
+
 }

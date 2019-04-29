@@ -21,9 +21,7 @@ class WordListTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // 去除导航栏下边框,设置颜色
-        self.navigationController?.navigationBar.shadowImage = UIImage()
-        self.navigationController?.navigationBar.barTintColor = UIColor.white
+        self.title = "我的"
         
         // 绘制spinner
         spinner = UIActivityIndicatorView(style: .whiteLarge)
@@ -35,13 +33,25 @@ class WordListTableViewController: UITableViewController {
         self.view.addSubview(spinner)
         spinner.startAnimating()
         
+        // 去除导航栏下边框,设置颜色
+        self.navigationController?.navigationBar.shadowImage = UIImage()
+        self.navigationController?.navigationBar.barTintColor = UIColor.white
+        
+        //去除tableview分割线
+        self.tableView.separatorStyle = .none
+        
+        //创建重用cell
+        self.tableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
         getUserWordList()
         getUserLikedWordList()
     }
     
     func updateUI() {
         self.tableView.reloadData()
-        self.spinner.stopAnimating()
+        spinner.stopAnimating()
     }
     
     // MARK: - Table view data source
@@ -79,12 +89,10 @@ class WordListTableViewController: UITableViewController {
         return 0.001
     }
     
-    // 修改footerView颜色
-    //    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-    //        let footerView = UIView()
-    //        footerView.backgroundColor = UIColor.red
-    //        return footerView
-    //    }
+    // 修改header背景色
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        view.tintColor = UIColor.white
+    }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 32.0
@@ -99,11 +107,8 @@ class WordListTableViewController: UITableViewController {
             wordList = userLikedWordLists[indexPath.row]
         }
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "wordListCell", for: indexPath)
-        if let wordListCell = cell as? WordListCell {
-            wordListCell.wordList = wordList
-            wordListCell.wordListInfo.text = String("count: \(wordList.words.count)")
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "wordListCell", for: indexPath) as! WordListCell
+        cell.wordList = wordList
         
         return cell
     }

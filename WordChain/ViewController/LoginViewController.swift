@@ -7,17 +7,21 @@
 //
 
 import UIKit
+import Alamofire
 
 class LoginViewController: UIViewController {
     
     var alertToast: UIAlertController? = nil
-    let alertShowTime = 0.8
+    let alertShowTime = 0.5
     
+    @IBOutlet weak var spinner: UIActivityIndicatorView!
     @IBOutlet weak var accountTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.title = "登录"
+        
         let nav = self.navigationController?.navigationBar
         //导航栏颜色
         nav?.barTintColor = UIColor.white
@@ -59,9 +63,8 @@ class LoginViewController: UIViewController {
                     self.alertToast!.dismiss(animated: true, completion: nil)
                 }
             } else {
+                spinner.startAnimating()
                 login(account: account, password: password)
-                alertToast = UIAlertController(title: "登录中...", message: nil, preferredStyle: .alert)
-                present(alertToast!, animated: true, completion: nil)
             }
         }
     }
@@ -69,52 +72,34 @@ class LoginViewController: UIViewController {
     //http://47.103.3.131:5000/login
     func login(account: String, password: String)
     {
-        let session = URLSession(configuration: .default)
+        let parameters = ["account": account, "password":password]
+        let request = "http://47.103.3.131:5000/login"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
         
-        let json = ["account":account, "password":password]
-        let jsonData = try? JSONSerialization.data(withJSONObject: json)
-        
-        let url = URL(string: "http://47.103.3.131:5000/login")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.httpBody = jsonData
-        let task = session.dataTask(with: request) {  [weak self] (data: Data?, response, error) in
-            if let error = error {
-                print("error: \(error)")
-                // TODO 获取不到UI反馈
-            } else {
-                if let response = response as? HTTPURLResponse, let data = data, let dataString = String(data: data, encoding: .utf8) {
-                    print("statusCode: \(response.statusCode)")
-                    print("data: \(dataString)")
-                    if response.statusCode == 200 {
-                        let user = try! JSONDecoder().decode(User.self, from: data)
-                        UserDefaults.standard.set(user.id, forKey: "userId")
-                        DispatchQueue.main.async {
-                            // 取消之前登录中弹窗
-                            self?.alertToast?.dismiss(animated: false) {
-                                // 回到原来界面
-                                self?.dismiss(animated: true, completion: nil)
-                            }
-                        }
-                    } else {
-                        DispatchQueue.main.async {
-                            // 取消之前登录中弹窗,必须之前的dismiss完毕才能有新的弹窗
-                            self?.alertToast?.dismiss(animated: false) {
-                                //告知失败
-                                let failAlertToast = UIAlertController(title: "登录失败", message: nil, preferredStyle: .alert)
-                                self?.present(failAlertToast, animated: true, completion: nil)
-                                // 1秒后消失
-                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self!.alertShowTime) {
-                                    failAlertToast.dismiss(animated: true, completion: nil)
-                                }
-                            }
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode, let data = response.data {
+                if statusCode == 200 {
+                    let user = try! JSONDecoder().decode(User.self, from: data)
+                    UserDefaults.standard.set(user.id, forKey: "userId")
+                    DispatchQueue.main.async {
+                        self?.spinner.stopAnimating()
+                        // 取消之前登录中弹窗
+                        self?.dismiss(animated: true, completion: nil)
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self?.spinner.stopAnimating()
+                        let failAlertToast = UIAlertController(title: "账号或密码不正确", message: nil, preferredStyle: .alert)
+                        self?.present(failAlertToast, animated: true, completion: nil)
+                        // 1秒后消失
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self!.alertShowTime) {
+                            failAlertToast.dismiss(animated: true, completion: nil)
                         }
                     }
                 }
             }
         }
-        task.resume()
     }
     
 }

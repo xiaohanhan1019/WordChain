@@ -9,6 +9,12 @@
 import Foundation
 
 struct WordList: Codable {
-    let name: String
-    let words: [Word]
+    let id: Int
+    var name: String
+    var words: [Word]
+    var image_url: String
+    var description: String
+    let ownerImage_url: String
+    let ownerName: String
+    let user_id: Int
 }

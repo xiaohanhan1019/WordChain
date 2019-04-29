@@ -1,78 +1,67 @@
 //
-//  EditUserNicknameViewController.swift
+//  EditWordListNameViewController.swift
 //  WordChain
 //
-//  Created by xiaohanhan on 2019/4/21.
+//  Created by xiaohanhan on 2019/4/26.
 //  Copyright © 2019 xiaohanhan. All rights reserved.
 //
 
 import UIKit
 import Alamofire
 
-protocol paramNicknameDelegate {
-    func returnNickname(nickname: String)
+protocol paramWordListNameDelegate {
+    func returnName(name: String)
 }
 
-class EditUserNicknameViewController: UIViewController {
+class EditWordListNameViewController: UIViewController {
     
-    let alertShowTime = 0.5
-    var previousNickname: String? = nil
-    
-    var delegate: paramNicknameDelegate?
+    var delegate: paramWordListNameDelegate?
+    var previousWordListName: String? = nil
+    var wordListId: Int? = nil
+
+    @IBOutlet weak var wordListNameTextField: UITextField!
     
     @IBOutlet weak var numberOfCharsLabel: UILabel!
     
-    @IBOutlet weak var nicknameTextField: UITextField!
-    
     @IBOutlet weak var spinner: UIActivityIndicatorView!
-    
+
     var numberOfChars: Int{
-        return nicknameTextField.text?.count ?? 0
+        return wordListNameTextField.text?.count ?? 0
     }
     
-    @IBAction func nameTextFieldChange(_ sender: Any) {
-        numberOfCharsLabel.text = String("\(numberOfChars)/12")
+    @IBAction func wordListNameChange(_ sender: Any) {
+        numberOfCharsLabel.text = String("\(numberOfChars)/20")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        self.title = "修改昵称"
+        
+        self.title = "修改词单名称"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(self.save))
-        nicknameTextField.text = previousNickname
-        numberOfCharsLabel.text = String("\(numberOfChars)/12")
+        wordListNameTextField.text = previousWordListName
+        numberOfCharsLabel.text = String("\(numberOfChars)/20")
     }
     
     @objc func save() {
-        if let nickname = nicknameTextField.text {
-            if !nickname.isEmpty {
-                if nickname.count > 12{
-                    let alertToast = UIAlertController(title: "昵称不能超过12个字符！", message: nil, preferredStyle: .alert)
-                    present(alertToast, animated: true) {
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.alertShowTime) {
-                            alertToast.dismiss(animated: true, completion: nil)
-                        }
+        if let wordListName = wordListNameTextField.text {
+            if wordListName.count > 20{
+                let alertToast = UIAlertController(title: "不能超过20个字符！", message: nil, preferredStyle: .alert)
+                present(alertToast, animated: true) {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        alertToast.dismiss(animated: true, completion: nil)
                     }
-                } else {
-                    spinner.startAnimating()
-                    editUserInfo(nickname: nicknameTextField.text!)
                 }
             } else {
-                let alertToast = UIAlertController(title: "昵称不能为空！", message: nil, preferredStyle: .alert)
-                present(alertToast, animated: true) {
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + self.alertShowTime) {
-                       alertToast.dismiss(animated: true, completion: nil)
-                    }
-                }
+                spinner.startAnimating()
+                editWordList(wordListName: wordListName, wordListId: wordListId!)
             }
         }
     }
     
-    //http://47.103.3.131:5000/editUserInfo
-    func editUserInfo(nickname: String){
-        let userId = UserDefaults.standard.integer(forKey: "userId")
-        let parameters = ["user_id": userId, "nickname": nickname] as [String : Any]
-        let request = "http://47.103.3.131:5000/editUserInfo"
+    //http://47.103.3.131:5000/editWordList
+    func editWordList(wordListName: String, wordListId: Int){
+        let parameters = ["wordList_id": wordListId, "name": wordListName] as [String : Any]
+        let request = "http://47.103.3.131:5000/editWordList"
         let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
         
         Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
@@ -86,7 +75,8 @@ class EditUserNicknameViewController: UIViewController {
                         self?.present(alertToast, animated: true) {
                             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
                                 alertToast.dismiss(animated: true, completion: nil)
-                                self?.delegate?.returnNickname(nickname: nickname)
+                                print("wordlistname")
+                                self?.delegate?.returnName(name: wordListName)
                                 self?.navigationController?.popViewController(animated:true)
                             }
                         }
@@ -105,5 +95,4 @@ class EditUserNicknameViewController: UIViewController {
             }
         }
     }
-
 }

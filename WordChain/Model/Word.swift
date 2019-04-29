@@ -10,4 +10,6 @@ import Foundation
 
 struct Word: Codable{
     let name : String
+    let meaning: String
+    let id: Int
 }
