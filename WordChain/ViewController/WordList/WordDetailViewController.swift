@@ -100,19 +100,35 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     }
     
     func popWordListTable() {
-        let alrController = UIAlertController(title: "", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
+        let alertController = UIAlertController(title: "收藏到词单", message: nil, preferredStyle: .actionSheet)
         
-        let wordListTableView = UITableView()
+        // controller嵌入alertview
+        let controller = UIViewController()
+        
+        // controller frame设置
+        let height: CGFloat = min(340,CGFloat(wordLists.count * 68))
+        let rect = CGRect(x: 0, y: 0, width: alertController.view.bounds.size.width - 16, height: height)
+        controller.preferredContentSize = rect.size
+        
+        // tableview设置
+        let wordListTableView = UITableView(frame: rect)
         wordListTableView.delegate = self
         wordListTableView.dataSource = self
         wordListTableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
-        alrController.view.addSubview(wordListTableView)
+        wordListTableView.tableFooterView  = UIView()
+        wordListTableView.tableHeaderView  = UIView()
+        wordListTableView.separatorStyle = .none
+        
+        controller.view.addSubview(wordListTableView)
         
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)
         
-        alrController.addAction(cancelAction)
+        alertController.view.alpha = 1.0
+        alertController.addAction(cancelAction)
+        alertController.setValue(controller, forKey: "contentViewController")
+    alertController.view.subviews.first?.subviews.first?.subviews.last!.backgroundColor = UIColor.white
         
-        self.present(alrController, animated: true, completion:{})
+        self.present(alertController, animated: true, completion: nil)
     }
     
     @objc func clickToCollect() {
@@ -138,6 +154,12 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
         }
         
         return cell
+    }
+    
+    // 点击收藏
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        addToWordList(wordId: detailWord!.id, wordListId: wordLists[indexPath.row].id)
+        self.dismiss(animated: true, completion: nil)
     }
     
     //获取用户创建的单词表
@@ -175,6 +197,40 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
                 self?.css = wordDetailHtml.css
                 DispatchQueue.main.async {
                     self?.configureView()
+                }
+            }
+        }
+    }
+    
+    //http://47.103.3.131:5000/addWordToWordList
+    func addToWordList(wordId: Int, wordListId: Int){
+        let parameters = ["wordList_id": wordListId, "word_id": wordId]
+        let request = "http://47.103.3.131:5000/addWordToWordList"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("status code: \(statusCode)")
+                if statusCode == 200 {
+                    DispatchQueue.main.async {
+                        let alertToast = UIAlertController(title: "已收藏", message: nil, preferredStyle: .alert)
+                        // 收藏图标变化
+                        self?.present(alertToast, animated: true) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                alertToast.dismiss(animated: true, completion: nil)
+                            }
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        let alertToast = UIAlertController(title: "单词已存在", message: nil, preferredStyle: .alert)
+                        self?.present(alertToast, animated: true) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                alertToast.dismiss(animated: true, completion: nil)
+                            }
+                        }
+                    }
                 }
             }
         }

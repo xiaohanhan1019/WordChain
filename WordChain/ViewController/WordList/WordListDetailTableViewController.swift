@@ -15,6 +15,9 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         wordList?.name = name
         wordList?.description = description
         
+        wordListNameLabel.text = wordList?.name
+        wordListInfoLabel.text = wordList?.description
+        
         wordListCoverImageView.layer.cornerRadius = 15
         wordListCoverImageView.clipsToBounds = true
         wordListCoverImageView.image = cover.crop(ratio: 1.0)
@@ -27,11 +30,20 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
     @IBOutlet weak var wordListOwnerNameLabel: UILabel!
     @IBOutlet weak var wordListInfoLabel: UILabel!
     
+    @IBOutlet weak var likeBtn: UIButton!
+    @IBOutlet weak var learnBtn: UIButton!
+    
+    var userOwnThisWordList: Bool {
+        return wordList!.user_id == UserDefaults.standard.integer(forKey: "userId")
+    }
+    
+    var userLikeThisWordList: Bool? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.title = "词单"
-        //设置左上角返回键,设置大小
+        //设置右上角编辑键
         let editBtn = UIButton(type: .custom)
         editBtn.frame = CGRect(x: 0.0, y: 0.0, width: 20, height: 20)
         editBtn.setImage(UIImage(named:"editWordList"), for: .normal)
@@ -50,6 +62,14 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         
         self.tableView.tableFooterView = UIView()
         self.tableView.reloadData()
+        
+        //调接口判断用户是否收藏了该词单
+        let userId = UserDefaults.standard.integer(forKey: "userId")
+        if userId == wordList?.user_id {
+            updateUI()
+        } else {
+            judgeIfUserLiked(userId: userId, wordListId: wordList!.id)
+        }
     }
     
     func updateUI() {
@@ -66,12 +86,30 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         wordListNameLabel.text = wordList?.name
         wordListInfoLabel.text = wordList?.description
         wordListOwnerNameLabel.text = wordList?.ownerName
+        
+        if userOwnThisWordList {
+            likeBtn.setImage(UIImage(named: "like"), for: .normal)
+        } else if userLikeThisWordList ?? false {
+            likeBtn.setImage(UIImage(named: "like"), for: .normal)
+        } else {
+            likeBtn.setImage(UIImage(named: "heart_empty"), for: .normal)
+        }
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        updateUI()
+    @IBAction func clickToCollect(_ sender: Any) {
+        if !userOwnThisWordList {
+            if userLikeThisWordList! {
+                //取消收藏
+            } else {
+                //收藏
+            }
+        }
     }
-
+    
+    @IBAction func clickToLearn(_ sender: Any) {
+        
+    }
+    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -139,19 +177,59 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
     @objc func editClick() {
         let alert = UIAlertController()
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)
-        let editWordListAction = UIAlertAction(title: "编辑词单信息", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
+        let editWordListAction = UIAlertAction(title: "编辑词单信息", style: .default){ (action:UIAlertAction) in
             self.editWordList()
         }
-        let sortWordAction = UIAlertAction(title: "更改单词排序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
+        let sortWordAction = UIAlertAction(title: "更改单词排序", style: .default){ (action:UIAlertAction) in
             self.sortWord()
         }
+        let deleteWordListAction = UIAlertAction(title: "删除词单", style: .destructive){ (action:UIAlertAction) in
+            self.deleteWordList()
+        }
         
+        alert.addAction(sortWordAction)
         if wordList?.user_id == UserDefaults.standard.integer(forKey: "userId") {
             alert.addAction(editWordListAction)
+            alert.addAction(deleteWordListAction)
         }
-        alert.addAction(sortWordAction)
+        
         alert.addAction(cancelAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func deleteWordList() {
+        let parameters = ["wordList_id": wordList!.id]
+        let request = "http://47.103.3.131:5000/delWordList"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("status code: \(statusCode)")
+                if statusCode == 200 {
+                    DispatchQueue.main.async {
+                        let alertToast = UIAlertController(title: "删除成功", message: nil, preferredStyle: .alert)
+                        self?.present(alertToast, animated: true) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                alertToast.dismiss(animated: true) {
+                                    // 返回上一级
+                                    self?.navigationController?.popViewController(animated:true)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        let alertToast = UIAlertController(title: "删除失败", message: nil, preferredStyle: .alert)
+                        self?.present(alertToast, animated: true) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                alertToast.dismiss(animated: true, completion: nil)
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     func editWordList() {
@@ -171,9 +249,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         let alert = UIAlertController()
         let cleanAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)
         let sortByWordName = UIAlertAction(title: "按字典序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
-            self.wordList?.words.sort { (word1, word2) -> Bool in
-                return word1.name<word2.name
-            }
+            self.wordList?.words.sort(by: {(word1: Word, word2: Word) -> Bool in return word1.name < word2.name })
             self.tableView.reloadData()
         }
         let sortByFamiliar = UIAlertAction(title: "按掌握程度排序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
@@ -183,6 +259,28 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         alert.addAction(sortByFamiliar)
         alert.addAction(cleanAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    //http://47.103.3.131:5000/judgeUserLiked
+    func judgeIfUserLiked(userId: Int, wordListId: Int){
+        let parameters = ["user_id": userId, "wordList_id": wordListId] as [String : Any]
+        let request = "http://47.103.3.131:5000/judgeUserLiked"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("judge status code: \(statusCode)")
+                if statusCode == 200 {
+                    self?.userLikeThisWordList = true
+                } else {
+                    self?.userLikeThisWordList = false
+                }
+            }
+            DispatchQueue.main.async {
+                self?.updateUI()
+            }
+        }
     }
     
     //http://47.103.3.131:5000/delWordFromWordList

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class WordListCell: UITableViewCell {
 
@@ -29,7 +30,7 @@ class WordListCell: UITableViewCell {
     
     private func updateUI() {
         wordListName.text = wordList?.name
-        wordListInfo.text = wordList?.description
+        wordListInfo.text = String("共\(wordList?.words.count ?? 0)个单词")
         if wordList?.image_url == "" {
             wordListCoverImage.downloadedFrom(link: "http://47.103.3.131/default.jpg", cornerRadius: 10)
         } else {
@@ -41,25 +42,33 @@ class WordListCell: UITableViewCell {
         super.setSelected(selected, animated: animated)
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        //wordListCoverImage.image = nil
+    }
+    
 }
 
 extension UIImageView {
     func downloadedFrom(url: URL, contentMode mode: UIView.ContentMode = .scaleAspectFit, cornerRadius: CGFloat) {
         contentMode = mode
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            guard
-                let httpURLResponse = response as? HTTPURLResponse, httpURLResponse.statusCode == 200,
-                let mimeType = response?.mimeType, mimeType.hasPrefix("image"),
-                let data = data, error == nil,
-                let image = UIImage(data: data)
-                else { return }
-            DispatchQueue.main.async() {
-                self.image = image.crop(ratio: 1)
-                // 圆角图片
-                self.layer.cornerRadius = cornerRadius
-                self.clipsToBounds = true
+        
+        DispatchQueue.global(qos: .background).async {
+            Alamofire.request(url).responseData { response in
+                guard
+                    let data = response.result.value,
+                    response.response?.statusCode == 200,
+                    let mimeType = response.response?.mimeType, mimeType.hasPrefix("image"),
+                    let image = UIImage(data: data)
+                    else { return }
+                DispatchQueue.main.async() {
+                    self.image = image.crop(ratio: 1)
+                    // 圆角图片
+                    self.layer.cornerRadius = cornerRadius
+                    self.clipsToBounds = true
+                }
             }
-            }.resume()
+        }
     }
     func downloadedFrom(link: String, cornerRadius: CGFloat, contentMode mode: UIView.ContentMode = .scaleAspectFit) {
         guard let url = URL(string: link) else { return }

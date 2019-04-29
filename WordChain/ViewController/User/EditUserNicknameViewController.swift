@@ -15,7 +15,7 @@ protocol paramNicknameDelegate {
 
 class EditUserNicknameViewController: UIViewController {
     
-    let alertShowTime = 0.5
+    let alertShowTime = 0.3
     var previousNickname: String? = nil
     
     var delegate: paramNicknameDelegate?
@@ -84,7 +84,7 @@ class EditUserNicknameViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改成功", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                                 self?.delegate?.returnNickname(nickname: nickname)
                                 self?.navigationController?.popViewController(animated:true)
@@ -96,7 +96,7 @@ class EditUserNicknameViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改失败", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                             }
                         }

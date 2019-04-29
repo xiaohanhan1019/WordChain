@@ -33,11 +33,12 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     
     var userWordLists = [WordList]()
     
+    let semaphore = DispatchSemaphore(value: 1)
+    
+    var isUserHimself: Bool = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        let wordList = WordList(id: 0, name: "aaa", words: [Word(name: "apple", meaning: "苹果", id: 0)], image_url: "", description: "", ownerImage_url: "", ownerName: "", user_id: 0)
-        userWordLists.append(wordList)
         
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
@@ -103,8 +104,13 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        let userId = UserDefaults.standard.integer(forKey: "userId")
-        getUserInfo(userId: userId)
+        if isUserHimself {
+            let userId = UserDefaults.standard.integer(forKey: "userId")
+            getUserInfo(userId: userId)
+            getUserWordList(userId: userId)
+        } else {
+            
+        }
     }
     
     func updateUI(){
@@ -117,6 +123,7 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         userStatusLabel.text = user?.status
         userNameLabel.text = user?.nickname
         
+        self.wordListTableView.reloadData()
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -127,7 +134,7 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         if tableView == self.wordListTableView {
             let cell = tableView.dequeueReusableCell(withIdentifier: "wordListCell", for: indexPath)
             if let wordListCell = cell as? WordListCell {
-                wordListCell.wordList = userWordLists[0]
+                wordListCell.wordList = userWordLists[indexPath.row]
             }
             return cell
         } else {
@@ -140,7 +147,11 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        if section == 0 {
+            return userWordLists.count
+        } else {
+            return 10
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -149,6 +160,26 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
 
     func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "showWordListDetail", sender: tableView)
+        wordListTableView.deselectRow(at: indexPath, animated: true)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showWordListDetail" {
+            if let indexPath = wordListTableView.indexPathForSelectedRow {
+                let wordList = userWordLists[indexPath.row]
+                
+                let controller = (segue.destination) as! WordListDetailTableViewController
+                controller.wordList = wordList
+                
+                //去掉后退键文字
+                let item = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                self.navigationItem.backBarButtonItem = item
+            }
+        }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -196,18 +227,41 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     
     //http://47.103.3.131:5000/getUserInfo
     func getUserInfo(userId: Int) {
+        let userId = UserDefaults.standard.integer(forKey: "userId")
         let parameters = ["user_id": userId]
         let request = "http://47.103.3.131:5000/getUserInfo"
-        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
         
-        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
-            
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                print("Data: \(utf8Text)")
-                self?.user = try! JSONDecoder().decode(User.self, from: data)
-                DispatchQueue.main.async {
-                    self?.updateUI()
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("Data: \(utf8Text)")
+                    self?.user = try! JSONDecoder().decode(User.self, from: data)
                 }
+                self?.semaphore.signal()
+            }
+        }
+    }
+    
+    //获取用户创建的单词表
+    //http://47.103.3.131:5000/getAllUserWordList
+    func getUserWordList(userId: Int) {
+        let parameters = ["user_id": userId]
+        let request = "http://47.103.3.131:5000/getAllUserWordList"
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("Data: \(utf8Text)")
+                    self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                    DispatchQueue.main.async {
+                        self?.updateUI()
+                    }
+                }
+                self?.semaphore.signal()
             }
         }
     }

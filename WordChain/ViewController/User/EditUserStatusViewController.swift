@@ -15,7 +15,7 @@ protocol paramStatusDelegate {
 
 class EditUserStatusViewController: UIViewController {
     
-    let alertShowTime = 0.5
+    let alertShowTime = 0.3
     var previousStatus: String? = nil
     
     var delegate: paramStatusDelegate?
@@ -76,7 +76,7 @@ class EditUserStatusViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改成功", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                                 self?.delegate?.returnStatus(status: status)
                                 self?.navigationController?.popViewController(animated:true)
@@ -88,7 +88,7 @@ class EditUserStatusViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改失败", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                             }
                         }

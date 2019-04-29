@@ -37,8 +37,11 @@ class WordListTableViewController: UITableViewController {
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         
-        //去除tableview分割线
+        // 去除tableview分割线
         self.tableView.separatorStyle = .none
+        
+        // 右上角添加词单按钮
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(self.clickToAddWordList))
         
         //创建重用cell
         self.tableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
@@ -52,6 +55,36 @@ class WordListTableViewController: UITableViewController {
     func updateUI() {
         self.tableView.reloadData()
         spinner.stopAnimating()
+    }
+    
+    @objc func clickToAddWordList() {
+        let alertController = UIAlertController(title: "新建词单", message: nil, preferredStyle: .alert)
+
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .default) {
+            (action: UIAlertAction!) -> Void in
+            if let wordListName = alertController.textFields?.first?.text{
+                if wordListName.isEmpty {
+                    let alertToast = UIAlertController(title: "词单标题不能为空！", message: nil, preferredStyle: .alert)
+                    self.present(alertToast, animated: true) {
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            alertToast.dismiss(animated: true, completion: nil)
+                        }
+                    }
+                } else {
+                    self.addWordList(wordListName: wordListName)
+                }
+            }
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        
+        alertController.addTextField {
+            (textField: UITextField!) -> Void in
+            textField.placeholder = "词单标题"
+        }
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     // MARK: - Table view data source
@@ -115,6 +148,7 @@ class WordListTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.performSegue(withIdentifier: "showWordListDetail", sender: tableView)
+        self.tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -180,6 +214,49 @@ class WordListTableViewController: UITableViewController {
                 }
                 
                 self?.semaphore.signal()
+            }
+        }
+    }
+    
+    // 添加词单
+    func addWordList(wordListName: String) {
+        let userId = UserDefaults.standard.integer(forKey: "userId")
+        
+        let parameters = ["wordList_name": wordListName, "user_id": userId] as [String : Any]
+        let request = "http://47.103.3.131:5000/addWordList"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("status code: \(statusCode)")
+                if statusCode == 200 {
+                    if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                        print("Data: \(utf8Text)")
+                        let newWordList = try! JSONDecoder().decode(WordList.self, from: data)
+                        
+                        DispatchQueue.main.async {
+                            let alertToast = UIAlertController(title: "新建成功", message: nil, preferredStyle: .alert)
+                            self?.userWordLists.append(newWordList)
+                            self?.tableView.insertRows(at: [IndexPath(row: (self?.userWordLists.count)!-1, section: 0)], with: .fade)
+                            
+                            self?.present(alertToast, animated: true) {
+                                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                    alertToast.dismiss(animated: true, completion: nil)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        let alertToast = UIAlertController(title: "添加失败", message: nil, preferredStyle: .alert)
+                        self?.present(alertToast, animated: true) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
+                                alertToast.dismiss(animated: true, completion: nil)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

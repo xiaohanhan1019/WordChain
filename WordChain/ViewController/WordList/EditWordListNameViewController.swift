@@ -47,7 +47,7 @@ class EditWordListNameViewController: UIViewController {
             if wordListName.count > 20{
                 let alertToast = UIAlertController(title: "不能超过20个字符！", message: nil, preferredStyle: .alert)
                 present(alertToast, animated: true) {
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                         alertToast.dismiss(animated: true, completion: nil)
                     }
                 }
@@ -73,7 +73,7 @@ class EditWordListNameViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改成功", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                                 print("wordlistname")
                                 self?.delegate?.returnName(name: wordListName)
@@ -86,7 +86,7 @@ class EditWordListNameViewController: UIViewController {
                         self?.spinner.stopAnimating()
                         let alertToast = UIAlertController(title: "修改失败", message: nil, preferredStyle: .alert)
                         self?.present(alertToast, animated: true) {
-                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                 alertToast.dismiss(animated: true, completion: nil)
                             }
                         }

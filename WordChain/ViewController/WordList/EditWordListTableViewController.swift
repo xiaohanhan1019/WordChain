@@ -85,7 +85,7 @@ class EditWordListTableViewController: UITableViewController, UIImagePickerContr
         
         //获取选择的原图
         let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
-        let imageData = pickedImage.jpegData(compressionQuality: 0.6)
+        let imageData = pickedImage.jpegData(compressionQuality: 0.3)
         
         if let imageBase64String = imageData?.base64EncodedString() {
             // postImage
@@ -102,7 +102,7 @@ class EditWordListTableViewController: UITableViewController, UIImagePickerContr
                             picker.dismiss(animated: true) {
                                 let alertToast = UIAlertController(title: "修改成功", message: nil, preferredStyle: .alert)
                                 self?.present(alertToast, animated: true) {
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                         alertToast.dismiss(animated: true) {
                                             // 修改头像
                                             self?.delegate?.returnWordListInfo(name: (self?.wordList!.name)!, description: (self?.wordList!.description)!, cover: pickedImage)
@@ -120,7 +120,7 @@ class EditWordListTableViewController: UITableViewController, UIImagePickerContr
                             picker.dismiss(animated: true) {
                                 let alertToast = UIAlertController(title: "修改失败", message: nil, preferredStyle: .alert)
                                 self?.present(alertToast, animated: true) {
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
                                         alertToast.dismiss(animated: true, completion: nil)
                                     }
                                 }

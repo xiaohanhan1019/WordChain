@@ -137,8 +137,8 @@
 			children = (
 				BB5C05B2226379430076011B /* WordListTableViewController.swift */,
 				BB5C05B82266DA170076011B /* WordListDetailTableViewController.swift */,
-				BB7730FE2272C2E9005B5934 /* EditWordListNameViewController.swift */,
 				BB7730FC2271FC29005B5934 /* EditWordListTableViewController.swift */,
+				BB7730FE2272C2E9005B5934 /* EditWordListNameViewController.swift */,
 				BB7731002272C3AC005B5934 /* EditWordListDescriptionViewController.swift */,
 			);
 			path = WordList;
