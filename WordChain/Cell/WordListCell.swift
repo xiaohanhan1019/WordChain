@@ -2,22 +2,23 @@
 //  WordListCell.swift
 //  WordChain
 //
-//  Created by xiaohanhan on 2019/4/14.
+//  Created by xiaohanhan on 2019/4/29.
 //  Copyright © 2019 xiaohanhan. All rights reserved.
 //
 
 import UIKit
 
 class WordListCell: UITableViewCell {
-    
+
     @IBOutlet weak var wordListCoverImage: UIImageView!
     @IBOutlet weak var wordListName: UILabel!
     @IBOutlet weak var wordListInfo: UILabel!
-    @IBOutlet var wordListView: UIView!
-
+    @IBOutlet weak var wordListCellView: UIView!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
-        wordListView.layer.cornerRadius = 8
+        
+        wordListCellView.layer.cornerRadius = 8
     }
     
     var wordList: WordList? {
@@ -34,6 +35,10 @@ class WordListCell: UITableViewCell {
         } else {
             wordListCoverImage.downloadedFrom(link: wordList?.image_url ?? "http://47.103.3.131/default.jpg", cornerRadius: 10)
         }
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
     }
     
 }

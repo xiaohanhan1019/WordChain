@@ -27,8 +27,6 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     
     var wordLists = [WordList]()
     
-    @IBOutlet weak var wordListTableView: UITableView!
-    
     func configureView() {
         let wordDetailWebView = WKWebView()
         self.view.addSubview(wordDetailWebView)
@@ -104,12 +102,10 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     func popWordListTable() {
         let alrController = UIAlertController(title: "", message: nil, preferredStyle: UIAlertController.Style.actionSheet)
         
-        // todo 代码写cell
-        wordListTableView.rowHeight = UITableView.automaticDimension
-        wordListTableView.estimatedRowHeight = 80.0
+        let wordListTableView = UITableView()
         wordListTableView.delegate = self
         wordListTableView.dataSource = self
-        wordListTableView.isHidden = false
+        wordListTableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
         alrController.view.addSubview(wordListTableView)
         
         let cancelAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)

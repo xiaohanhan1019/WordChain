@@ -96,6 +96,9 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         self.wordListTableView.frame = CGRect(x: 8, y: 0, width: WIDTH - 16, height: HEIGHT)
         self.momentTableView.frame = CGRect(x: WIDTH + 8, y: 0, width: WIDTH - 16, height: HEIGHT)
         
+        //创建重用cell
+        self.wordListTableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
+        
         //TODO 有bug scrollView和TableView的手势问题
     }
     

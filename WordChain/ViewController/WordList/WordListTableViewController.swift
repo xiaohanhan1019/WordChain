@@ -113,6 +113,10 @@ class WordListTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "showWordListDetail", sender: tableView)
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showWordListDetail" {
             if let indexPath = self.tableView.indexPathForSelectedRow {
