@@ -3,5 +3,4 @@ use_frameworks!
 
 target 'WordChain' do
     pod 'Alamofire', '~> 4.0'
-
 end

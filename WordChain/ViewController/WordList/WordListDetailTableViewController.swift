@@ -171,6 +171,9 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
                 let item = UIBarButtonItem(title: word?.name, style: .plain, target: self, action: nil)
                 self.navigationItem.backBarButtonItem = item
             }
+        } else if segue.identifier == "learnWord" {
+            let controller = (segue.destination) as! LearnViewController
+            controller.wordList = wordList
         }
     }
 
@@ -252,11 +255,16 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
             self.wordList?.words.sort(by: {(word1: Word, word2: Word) -> Bool in return word1.name < word2.name })
             self.tableView.reloadData()
         }
-        let sortByFamiliar = UIAlertAction(title: "按掌握程度排序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
-            
+        let sortByRandom = UIAlertAction(title: "随机乱序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
+            self.wordList?.words.shuffle()
+            self.tableView.reloadData()
+        }
+        let sortBySimilarity = UIAlertAction(title: "按相似度排序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
+            self.sortWordBySimilarity()
         }
         alert.addAction(sortByWordName)
-        alert.addAction(sortByFamiliar)
+        alert.addAction(sortByRandom)
+        alert.addAction(sortBySimilarity)
         alert.addAction(cleanAction)
         self.present(alert, animated: true, completion: nil)
     }
@@ -314,5 +322,65 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
                 }
             }
         }
+    }
+    
+    //Alamofire搞不定
+    //http://47.103.3.131:5000/sortWordBySimilarity
+    func sortWordBySimilarity(){
+        if let jsonData = try? JSONEncoder().encode(wordList){
+            if let jsonString = String.init(data: jsonData, encoding: String.Encoding.utf8) {
+                print(jsonString)
+                
+                let url:NSURL = NSURL(string:"http://47.103.3.131:5000/sortWordBySimilarity")!
+                
+                let request:NSMutableURLRequest = NSMutableURLRequest(url: url as URL) //默认为get请求
+                request.timeoutInterval = 5.0 //设置请求超时为5秒
+                request.httpMethod = "POST"  //设置请求方法
+                request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
+
+                request.httpBody = jsonData
+                let session = URLSession.shared
+                
+                let task = session.dataTask(with: request as URLRequest, completionHandler: { [weak self] (data, response, error) -> Void in
+                    
+                    if let response = response as? HTTPURLResponse {
+                        print("statusCode: \(response.statusCode)")
+                    }
+                    if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                        print("data: \(dataString)")
+                        self?.wordList?.words = try! JSONDecoder().decode([Word].self, from: data)
+                        DispatchQueue.main.async {
+                            self?.tableView.reloadData()
+                        }
+                    }
+                    
+                })
+                
+                task.resume()
+            }
+        }
+    }
+}
+
+extension MutableCollection {
+    /// 打乱集合里的元素
+    mutating func shuffle() {
+        let c = count
+        guard c > 1 else { return }
+        
+        for (firstUnshuffled, unshuffledCount) in zip(indices, stride(from: c, to: 1, by: -1)) {
+            let d: Int = numericCast(arc4random_uniform(numericCast(unshuffledCount)))
+            let i = index(firstUnshuffled, offsetBy: d)
+            swapAt(firstUnshuffled, i)
+        }
+    }
+}
+
+extension Sequence {
+    /// 返回序列乱序的数组
+    func shuffled() -> [Element] {
+        var result = Array(self)
+        result.shuffle()
+        return result
     }
 }

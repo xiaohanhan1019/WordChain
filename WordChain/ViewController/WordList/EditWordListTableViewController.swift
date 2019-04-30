@@ -54,7 +54,9 @@ class EditWordListTableViewController: UITableViewController, UIImagePickerContr
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.delegate?.returnWordListInfo(name: wordList!.name, description: wordList!.description, cover: wordListCoverImageView.image!)
+        if let image = wordListCoverImageView.image {
+            self.delegate?.returnWordListInfo(name: wordList!.name, description: wordList!.description, cover: image)
+        }
     }
     
     // 返回时取消选中

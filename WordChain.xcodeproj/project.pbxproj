@@ -19,6 +19,7 @@
 		BB393116226C13A40041F525 /* UserSettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB393115226C13A40041F525 /* UserSettingTableViewController.swift */; };
 		BB393118226C1CA30041F525 /* EditUserNicknameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB393117226C1CA30041F525 /* EditUserNicknameViewController.swift */; };
 		BB393120226DBA560041F525 /* EditUserStatusViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB39311F226DBA560041F525 /* EditUserStatusViewController.swift */; };
+		BB4F92A12278974000E9F695 /* LearnViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB4F92A02278974000E9F695 /* LearnViewController.swift */; };
 		BB5C05AD2263664D0076011B /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05AC2263664D0076011B /* User.swift */; };
 		BB5C05AF226375D60076011B /* WordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05AE226375D60076011B /* WordList.swift */; };
 		BB5C05B3226379430076011B /* WordListTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5C05B2226379430076011B /* WordListTableViewController.swift */; };
@@ -51,6 +52,7 @@
 		BB393115226C13A40041F525 /* UserSettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettingTableViewController.swift; sourceTree = "<group>"; };
 		BB393117226C1CA30041F525 /* EditUserNicknameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserNicknameViewController.swift; sourceTree = "<group>"; };
 		BB39311F226DBA560041F525 /* EditUserStatusViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditUserStatusViewController.swift; sourceTree = "<group>"; };
+		BB4F92A02278974000E9F695 /* LearnViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnViewController.swift; sourceTree = "<group>"; };
 		BB5C05AC2263664D0076011B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		BB5C05AE226375D60076011B /* WordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordList.swift; sourceTree = "<group>"; };
 		BB5C05B2226379430076011B /* WordListTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WordListTableViewController.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				BB7730FC2271FC29005B5934 /* EditWordListTableViewController.swift */,
 				BB7730FE2272C2E9005B5934 /* EditWordListNameViewController.swift */,
 				BB7731002272C3AC005B5934 /* EditWordListDescriptionViewController.swift */,
+				BB4F92A02278974000E9F695 /* LearnViewController.swift */,
 			);
 			path = WordList;
 			sourceTree = "<group>";
@@ -346,6 +349,7 @@
 				BBCE1FDE2276B9510068320B /* WordListCell.swift in Sources */,
 				BB64BB4C2269F71900D13B4C /* MainTabBarController.swift in Sources */,
 				BB09BCA22254F2D4001B440F /* WordDetailViewController.swift in Sources */,
+				BB4F92A12278974000E9F695 /* LearnViewController.swift in Sources */,
 				BB09BCA42254F2D4001B440F /* SearchViewController.swift in Sources */,
 				BB09BCA32254F2D4001B440F /* Word.swift in Sources */,
 				BB5C05AF226375D60076011B /* WordList.swift in Sources */,
