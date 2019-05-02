@@ -22,8 +22,8 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     
     var player: AVAudioPlayer? = nil
     
-    var britishEngBtn: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 72, height: 24))
-    var americanEngBtn: UIButton = UIButton(frame: CGRect(x: 72, y: 0, width: 72, height: 24))
+    var britishEngBtn: UIButton = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 24))
+//    var americanEngBtn: UIButton = UIButton(frame: CGRect(x: 72, y: 0, width: 72, height: 24))
     
     var wordLists = [WordList]()
     
@@ -35,18 +35,19 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
         // 英式发音按钮 btn宽度小于60不显示文字(坑
         britishEngBtn.setImage(UIImage.init(imageLiteralResourceName: "horn"), for: .normal)
         britishEngBtn.imageView?.contentMode = .scaleAspectFit
-        britishEngBtn.setTitle("英", for: .normal)
+        britishEngBtn.setTitle(String(" /\(detailWord!.pronounce)/"), for: .normal)
         britishEngBtn.setTitleColor(#colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1), for: .normal)
         britishEngBtn.addTarget(self, action: #selector(self.clickToPlaySound(_:)), for: UIControl.Event.touchUpInside)
+        britishEngBtn.contentHorizontalAlignment = .left
         wordDetailWebView.scrollView.addSubview(britishEngBtn)
         
         // 美式发音按钮
-        americanEngBtn.setImage(UIImage.init(imageLiteralResourceName: "horn"), for: .normal)
-        americanEngBtn.imageView?.contentMode = .scaleAspectFit
-        americanEngBtn.setTitle("美", for: .normal)
-        americanEngBtn.setTitleColor(#colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1), for: .normal)
-        americanEngBtn.addTarget(self, action: #selector(self.clickToPlaySound(_:)), for: UIControl.Event.touchUpInside)
-        wordDetailWebView.scrollView.addSubview(americanEngBtn)
+//        americanEngBtn.setImage(UIImage.init(imageLiteralResourceName: "horn"), for: .normal)
+//        americanEngBtn.imageView?.contentMode = .scaleAspectFit
+//        americanEngBtn.setTitle("美", for: .normal)
+//        americanEngBtn.setTitleColor(#colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1), for: .normal)
+//        americanEngBtn.addTarget(self, action: #selector(self.clickToPlaySound(_:)), for: UIControl.Event.touchUpInside)
+//        wordDetailWebView.scrollView.addSubview(americanEngBtn)
         
         // 右上角收藏按钮
         let collectBtn = UIButton(frame: CGRect(x: 0.0, y: 0.0, width: 20, height: 20))
@@ -92,11 +93,12 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     }
     
     @objc func clickToPlaySound(_ sender: UIButton) {
-        if sender == britishEngBtn {
-            playSound(type: 1, word: detailWord!.name)
-        } else if sender == americanEngBtn {
-            playSound(type: 2, word: detailWord!.name)
-        }
+//        if sender == britishEngBtn {
+//            playSound(type: 1, word: detailWord!.name)
+//        } else if sender == americanEngBtn {
+//            playSound(type: 2, word: detailWord!.name)
+//        }
+        playSound(type: 1, word: detailWord!.name)
     }
     
     func popWordListTable() {

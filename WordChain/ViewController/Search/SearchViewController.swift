@@ -40,6 +40,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
         
         //tableview空白部分无分割线
         self.wordTableView.tableFooterView = UIView()
+        self.wordTableView.register(UINib(nibName:"WordCell", bundle:nil),forCellReuseIdentifier:"WordCell")
     }
     
     // MARK: - Table View DataSoure
@@ -64,6 +65,7 @@ class SearchViewController: UIViewController, UITableViewDataSource, UITableView
     
     // 返回时取消选中
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "showDetail", sender: tableView)
         wordTableView.deselectRow(at: indexPath, animated: true)
     }
     

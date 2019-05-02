@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "A252C14ECC6E1E27DD56D71D6DCBF8FA"
-               BuildableName = "Pods_WordChain.framework"
-               BlueprintName = "Pods-WordChain"
+               BlueprintIdentifier = "C89C4FA9BA5C60F1B371F0E7DE084635"
+               BuildableName = "LinearProgressBar.framework"
+               BlueprintName = "LinearProgressBar"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -45,9 +45,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "A252C14ECC6E1E27DD56D71D6DCBF8FA"
-            BuildableName = "Pods_WordChain.framework"
-            BlueprintName = "Pods-WordChain"
+            BlueprintIdentifier = "C89C4FA9BA5C60F1B371F0E7DE084635"
+            BuildableName = "LinearProgressBar.framework"
+            BlueprintName = "LinearProgressBar"
             ReferencedContainer = "container:Pods.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

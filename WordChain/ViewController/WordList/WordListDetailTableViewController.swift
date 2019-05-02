@@ -60,6 +60,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
         
+        self.tableView.register(UINib(nibName:"WordCell", bundle:nil),forCellReuseIdentifier:"WordCell")
         self.tableView.tableFooterView = UIView()
         self.tableView.reloadData()
         
@@ -106,10 +107,6 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         }
     }
     
-    @IBAction func clickToLearn(_ sender: Any) {
-        
-    }
-    
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -129,6 +126,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
     
     // 返回时取消选中
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "showDetail", sender: tableView)
         self.tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -175,6 +173,21 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
             let controller = (segue.destination) as! LearnViewController
             controller.wordList = wordList
         }
+    }
+    
+    override func shouldPerformSegue(withIdentifier identifier: String, sender: Any?) -> Bool {
+        if identifier == "learnWord"{
+            if wordList!.words.count == 0{
+                let alertToast = UIAlertController(title: "添加单词后才能开始学习哦！", message: nil, preferredStyle: .alert)
+                present(alertToast, animated: true) {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+                        alertToast.dismiss(animated: true, completion: nil)
+                    }
+                }
+                return false
+            }
+        }
+        return true
     }
 
     @objc func editClick() {

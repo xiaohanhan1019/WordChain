@@ -14,6 +14,15 @@ class WordCell: UITableViewCell {
     @IBOutlet weak var wordDetailLabel: UILabel!
     @IBOutlet weak var wordImageView: UIImageView!
     
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+    }
+    
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+    }
+    
     var word: Word? {
         didSet {
             updateUI()
@@ -25,5 +34,5 @@ class WordCell: UITableViewCell {
         wordDetailLabel.text = word?.meaning
         wordImageView.tintColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
     }
-
+    
 }
