@@ -25,18 +25,19 @@ class LearnViewController: UIViewController, UITableViewDelegate {
                 duration: 0.5,
                 options: [.transitionCrossDissolve],
                 animations: {
-                    self.progressBar.progressValue = CGFloat(self.currentIdx) / CGFloat((self.wordList?.words.count)!) * 100.0
+                    self.progressBar.progressValue = CGFloat(self.rightCnt) / CGFloat(self.wordCnt) * 100.0
             })
-            wordCnt = wordList!.words.count
         }
     }
     
     var wordCnt = 0
+    var rightCnt = 0;
     
     override func viewDidLoad() {
         super.viewDidLoad()
         learningCardView.word = wordList!.words[currentIdx]
         progressBar.progressValue = 0.0
+        wordCnt = wordList!.words.count
     }
     
     @IBAction func exit(_ sender: Any) {
@@ -49,7 +50,7 @@ class LearnViewController: UIViewController, UITableViewDelegate {
     
     @IBAction func learnWords(_ sender: UIButton) {
         if sender == knowBtn {
-            
+            rightCnt = rightCnt + 1
         } else if sender == unknownBtn {
             // 插到末尾
             wordList!.words.insert(wordList!.words[currentIdx], at: wordList!.words.count)
