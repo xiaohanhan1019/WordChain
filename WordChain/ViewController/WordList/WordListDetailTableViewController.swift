@@ -73,6 +73,10 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
     func updateUI() {
         if wordList?.image_url == ""{
             wordListCoverImageView.downloadedFrom(link: "http://47.103.3.131/default.jpg", cornerRadius: 15)
@@ -164,7 +168,6 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
                 
                 let controller = (segue.destination) as! WordDetailViewController
                 controller.detailWord = word
-                
                 // 设置返回键文字
                 let item = UIBarButtonItem(title: word?.name, style: .plain, target: self, action: nil)
                 self.navigationItem.backBarButtonItem = item
@@ -172,6 +175,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         } else if segue.identifier == "learnWord" {
             let controller = (segue.destination) as! LearnViewController
             controller.wordList = wordList
+            self.hidesBottomBarWhenPushed = true
         }
     }
     

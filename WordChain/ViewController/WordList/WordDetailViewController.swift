@@ -29,13 +29,16 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     
     func configureView() {
         let wordDetailWebView = WKWebView()
+        wordDetailWebView.scrollView.showsHorizontalScrollIndicator = false
         self.view.addSubview(wordDetailWebView)
         wordDetailWebView.frame = self.view.bounds
         
         // 英式发音按钮 btn宽度小于60不显示文字(坑
         britishEngBtn.setImage(UIImage.init(imageLiteralResourceName: "horn"), for: .normal)
         britishEngBtn.imageView?.contentMode = .scaleAspectFit
-        britishEngBtn.setTitle(String(" /\(detailWord!.pronounce)/"), for: .normal)
+        if let pronounce = detailWord?.pronounce, !pronounce.isEmpty {
+            britishEngBtn.setTitle(String(" /\(detailWord!.pronounce)/"), for: .normal)
+        }
         britishEngBtn.setTitleColor(#colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1), for: .normal)
         britishEngBtn.addTarget(self, action: #selector(self.clickToPlaySound(_:)), for: UIControl.Event.touchUpInside)
         britishEngBtn.contentHorizontalAlignment = .left
@@ -70,6 +73,7 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
         
         self.spinner.startAnimating()
         getDetail(word: detailWord!.name)

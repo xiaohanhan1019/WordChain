@@ -13,54 +13,84 @@ class LearnViewController: UIViewController, UITableViewDelegate {
 
     var wordList: WordList? = nil
     
-    @IBOutlet weak var progressBar: LinearProgressBar! {
-        didSet {
-            progressBar.progressValue = 0.0
-        }
-    }
+    @IBOutlet weak var progressBar: LinearProgressBar!
     @IBOutlet weak var learningCardView: LearningCardView!
     @IBOutlet weak var knowBtn: UIButton!
     @IBOutlet weak var unknownBtn: UIButton!
     
-    var currentWord = 0 {
+    var currentIdx = 0 {
         didSet {
-            progressBar.progressValue = CGFloat(currentWord / (wordList?.words.count)!)
+            UIView.transition(
+                with: progressBar,
+                duration: 0.5,
+                options: [.transitionCrossDissolve],
+                animations: {
+                    self.progressBar.progressValue = CGFloat(self.currentIdx) / CGFloat((self.wordList?.words.count)!) * 100.0
+            })
+            wordCnt = wordList!.words.count
         }
     }
     
-    var knowWordCnt = 0
+    var wordCnt = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        learningCardView.word = wordList!.words[currentWord]
+        learningCardView.word = wordList!.words[currentIdx]
+        progressBar.progressValue = 0.0
     }
     
     @IBAction func exit(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
         showExitConfirmAlert()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     @IBAction func learnWords(_ sender: UIButton) {
         if sender == knowBtn {
-            knowWordCnt = knowWordCnt + 1
-        } else if sender == unknownBtn {
             
+        } else if sender == unknownBtn {
+            // 插到末尾
+            wordList!.words.insert(wordList!.words[currentIdx], at: wordList!.words.count)
         }
-        currentWord = currentWord + 1
         
-        if currentWord == wordList!.words.count {
+        currentIdx = currentIdx + 1
+        if currentIdx == wordList!.words.count {
             showCompleteAlert()
+        } else {
+            UIView.transition(
+                with: learningCardView,
+                duration: 0.5,
+                options: [.transitionCurlUp],
+                animations: {
+                    self.learningCardView.word = self.wordList!.words[self.currentIdx]
+            })
         }
     }
     
     func showCompleteAlert() {
-        let msg = String("一共学习了\(wordList?.words.count)个单词,其中认识\(knowWordCnt)个,不认识\((wordList?.words.count)! - knowWordCnt)个")
+        let msg = String("一共学习了\(wordCnt)个单词")
         let alertController = UIAlertController(title: "恭喜，学习任务已经完成", message: msg, preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "确定", style: .default) {
+            (action: UIAlertAction!) -> Void in
+            self.navigationController?.popViewController(animated: true)
+        }
+        alertController.addAction(okAction)
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func showExitConfirmAlert() {
+        let msg = "马上就完成了！"
+        let alertController = UIAlertController(title: "确定要退出吗", message: msg, preferredStyle: .alert)
         
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .default) {
             (action: UIAlertAction!) -> Void in
-            self.dismiss(animated: true, completion: nil)
+            // 上传动态
+            self.navigationController?.popViewController(animated: true)
         }
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
@@ -68,8 +98,18 @@ class LearnViewController: UIViewController, UITableViewDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func showExitConfirmAlert() {
-        
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "showDetail" {
+            if let indexPath = learningCardView.similarWordTableView.indexPathForSelectedRow {
+                let word = learningCardView.similarWords[indexPath.row]
+                
+                let controller = (segue.destination) as! WordDetailViewController
+                controller.detailWord = word
+                // 设置返回键文字
+                let item = UIBarButtonItem(title: word.name, style: .plain, target: self, action: nil)
+                self.navigationItem.backBarButtonItem = item
+            }
+        }
     }
     
 }

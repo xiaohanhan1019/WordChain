@@ -40,7 +40,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2cZ-dG-8B4">
-                                <rect key="frame" x="16" y="28" width="18" height="18"/>
+                                <rect key="frame" x="16" y="72" width="18" height="18"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="2cZ-dG-8B4" secondAttribute="height" multiplier="1:1" id="UzE-rX-hJh"/>
                                     <constraint firstAttribute="height" constant="18" id="WKF-1k-FR0"/>
@@ -51,7 +51,7 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QzZ-He-aUD" customClass="LinearProgressBar" customModule="LinearProgressBar">
-                                <rect key="frame" x="67" y="28" width="241" height="18"/>
+                                <rect key="frame" x="67" y="72" width="241" height="18"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <userDefinedRuntimeAttributes>
                                     <userDefinedRuntimeAttribute type="number" keyPath="barThickness">
@@ -69,23 +69,45 @@
                                 </userDefinedRuntimeAttributes>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BcU-Hf-zuj" customClass="LearningCardView" customModule="WordChain" customModuleProvider="target">
-                                <rect key="frame" x="32" y="76" width="311" height="495"/>
+                                <rect key="frame" x="32" y="120" width="311" height="402"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <gestureRecognizers/>
                             </view>
-                            <stackView opaque="NO" contentMode="scaleToFill" spacing="156" translatesAutoresizingMaskIntoConstraints="NO" id="8Hb-jM-I6a">
-                                <rect key="frame" x="71" y="587" width="233" height="30"/>
+                            <stackView opaque="NO" contentMode="scaleToFill" spacing="128" translatesAutoresizingMaskIntoConstraints="NO" id="8Hb-jM-I6a">
+                                <rect key="frame" x="59.5" y="538" width="256" height="30"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wac-pM-wdI">
-                                        <rect key="frame" x="0.0" y="0.0" width="31" height="30"/>
-                                        <state key="normal" title="认识"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="64" height="30"/>
+                                        <color key="backgroundColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="64" id="ICv-Zi-Bce"/>
+                                        </constraints>
+                                        <state key="normal" title="认  识">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="learnWords:" destination="MQL-mF-FE2" eventType="touchUpInside" id="0Oa-Yh-nHq"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="blN-1m-JeE">
-                                        <rect key="frame" x="187" y="0.0" width="46" height="30"/>
-                                        <state key="normal" title="不认识"/>
+                                        <rect key="frame" x="192" y="0.0" width="64" height="30"/>
+                                        <color key="backgroundColor" name="systemPinkColor" catalog="System" colorSpace="catalog"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="64" id="I2s-GJ-wDk"/>
+                                        </constraints>
+                                        <state key="normal" title="不认识">
+                                            <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        </state>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                <integer key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                         <connections>
                                             <action selector="learnWords:" destination="MQL-mF-FE2" eventType="touchUpInside" id="GFM-2F-Bq3"/>
                                         </connections>
@@ -116,11 +138,12 @@
                         <outlet property="learningCardView" destination="BcU-Hf-zuj" id="OwI-5u-M2Q"/>
                         <outlet property="progressBar" destination="QzZ-He-aUD" id="IkF-XS-EOq"/>
                         <outlet property="unknownBtn" destination="blN-1m-JeE" id="P2z-Fm-ey1"/>
+                        <segue destination="q9G-tI-aRB" kind="show" identifier="showDetail" id="NDj-wJ-CYI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NBU-cp-Y52" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2653.5999999999999" y="363.86806596701655"/>
+            <point key="canvasLocation" x="2302" y="-458"/>
         </scene>
         <!--Detail-->
         <scene sceneID="7Gi-BB-K34">
@@ -153,7 +176,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="b9Z-rg-NT7" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3161" y="-791"/>
+            <point key="canvasLocation" x="3886" y="-627"/>
         </scene>
         <!--Word List Table View Controller-->
         <scene sceneID="1MH-Lf-Lhd">
@@ -293,9 +316,7 @@
                                                                         </userDefinedRuntimeAttribute>
                                                                     </userDefinedRuntimeAttributes>
                                                                     <connections>
-                                                                        <segue destination="MQL-mF-FE2" kind="popoverPresentation" identifier="learnWord" popoverAnchorView="ZlD-6N-ojM" id="dp6-oQ-2OU">
-                                                                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
-                                                                        </segue>
+                                                                        <segue destination="MQL-mF-FE2" kind="show" identifier="learnWord" id="dp6-oQ-2OU"/>
                                                                     </connections>
                                                                 </button>
                                                             </subviews>
@@ -341,7 +362,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Btv-Ra-m2m" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1312.8" y="295.50224887556226"/>
+            <point key="canvasLocation" x="1324" y="257"/>
         </scene>
         <!--User Info Table View Controller-->
         <scene sceneID="Ltd-1I-Zt0">
@@ -1382,6 +1403,6 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="oCO-Y0-Vap"/>
-        <segue reference="YaY-qT-9vQ"/>
+        <segue reference="NDj-wJ-CYI"/>
     </inferredMetricsTieBreakers>
 </document>

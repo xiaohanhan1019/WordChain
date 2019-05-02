@@ -11,7 +11,7 @@ import Alamofire
 import WebKit
 import AVFoundation
 
-class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelegate {
+class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelegate, UITableViewDelegate {
     
     let cornerRadius: CGFloat = 24.0
     
@@ -29,6 +29,8 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
     var isFaceUp: Bool = true { didSet { setNeedsDisplay(); setNeedsLayout() } }
     
     var player: AVAudioPlayer? = nil
+    
+    var similarWordTableView = UITableView()
 
     override func draw(_ rect: CGRect) {
         self.layer.borderWidth = 2
@@ -47,6 +49,7 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
         if !isFaceUp {
             self.clearAll()
             let wordDetailWebView = WKWebView()
+            wordDetailWebView.scrollView.showsHorizontalScrollIndicator = false
             self.addSubview(wordDetailWebView)
             wordDetailWebView.frame = self.bounds
             if let html = html, let css = css {
@@ -96,8 +99,9 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
                 self.addSubview(similarLabel)
             
                 // 创建similarWordTableView
-                let similarWordTableView = UITableView(frame: CGRect(x: 0, y: 240, width: self.bounds.maxX, height: 120), style:.plain)
+                similarWordTableView = UITableView(frame: CGRect(x: 0, y: 240, width: self.bounds.maxX, height: 120), style:.plain)
                 similarWordTableView.dataSource = self
+                similarWordTableView.delegate = self
                 // 注册cell
                 similarWordTableView.register(UINib(nibName:"WordCell", bundle:nil),forCellReuseIdentifier:"WordCell")
                 // 设置
@@ -108,7 +112,6 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
             }
             
         }
-        // 不记得单词随机10-20位后移
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -133,22 +136,16 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
-        if (touch.view?.isKind(of: UITableViewCell.self))! {
-            print("aaa")
+        if (touch.view?.isDescendant(of: similarWordTableView))! {
             return false
         }
-        
-        if (touch.view?.superview?.isKind(of: UITableViewCell.self))! {
-            print("bbb")
-            return false
-        }
-        
-        if (touch.view?.superview?.superview?.isKind(of: UITableViewCell.self))! {
-            print("ccc")
-            return false
-        }
-        
         return true
+    }
+    
+    // 返回时取消选中
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.viewController()?.performSegue(withIdentifier: "showDetail", sender: tableView)
+        similarWordTableView.deselectRow(at: indexPath, animated: true)
     }
     
     // 翻转动画
