@@ -8,6 +8,7 @@
 
 import UIKit
 import LinearProgressBar
+import Alamofire
 
 class LearnViewController: UIViewController, UITableViewDelegate {
 
@@ -76,6 +77,7 @@ class LearnViewController: UIViewController, UITableViewDelegate {
         
         let okAction = UIAlertAction(title: "确定", style: .default) {
             (action: UIAlertAction!) -> Void in
+            self.addMoment()
             self.navigationController?.popViewController(animated: true)
         }
         alertController.addAction(okAction)
@@ -90,7 +92,6 @@ class LearnViewController: UIViewController, UITableViewDelegate {
         let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
         let okAction = UIAlertAction(title: "确定", style: .default) {
             (action: UIAlertAction!) -> Void in
-            // 上传动态
             self.navigationController?.popViewController(animated: true)
         }
         alertController.addAction(cancelAction)
@@ -109,6 +110,23 @@ class LearnViewController: UIViewController, UITableViewDelegate {
                 // 设置返回键文字
                 let item = UIBarButtonItem(title: word.name, style: .plain, target: self, action: nil)
                 self.navigationItem.backBarButtonItem = item
+            }
+        }
+    }
+    
+    func addMoment(){
+        let userId = UserDefaults.standard.integer(forKey: "userId")
+        let parameters = ["user_id": userId, "wordList_id": wordList!.id]
+        let request = "http://47.103.3.131:5000/addMoment"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("status code: \(statusCode)")
+                if statusCode == 200 {
+                    print("moment 上传成功")
+                }
             }
         }
     }

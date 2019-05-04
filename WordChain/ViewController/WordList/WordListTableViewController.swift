@@ -16,7 +16,7 @@ class WordListTableViewController: UITableViewController {
     
     let semaphore = DispatchSemaphore(value: 1)
     
-    var spinner: UIActivityIndicatorView!
+    //var spinner: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,14 +24,14 @@ class WordListTableViewController: UITableViewController {
         self.title = "我的"
         
         // 绘制spinner
-        spinner = UIActivityIndicatorView(style: .whiteLarge)
-        spinner.backgroundColor = UIColor.darkGray
-        spinner.layer.cornerRadius = 16
-        spinner.frame = CGRect(x: 0, y: 0, width: 64, height: 64)
-        spinner.center.x = self.view.center.x
-        spinner.center.y = self.view.center.y-100
-        self.view.addSubview(spinner)
-        spinner.startAnimating()
+//        spinner = UIActivityIndicatorView(style: .whiteLarge)
+//        spinner.backgroundColor = UIColor.darkGray
+//        spinner.layer.cornerRadius = 16
+//        spinner.frame = CGRect(x: 0, y: 0, width: 64, height: 64)
+//        spinner.center.x = self.view.center.x
+//        spinner.center.y = self.view.center.y-100
+//        self.view.addSubview(spinner)
+//        spinner.startAnimating()
         
         // 去除导航栏下边框,设置颜色
         self.navigationController?.navigationBar.shadowImage = UIImage()
@@ -45,7 +45,31 @@ class WordListTableViewController: UITableViewController {
         
         //创建重用cell
         self.tableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
+        
+        let searchWordListBtn = UIButton(type: .custom)
+        searchWordListBtn.frame = CGRect(x: 0.0, y: 0.0, width: 20, height: 20)
+        searchWordListBtn.setImage(UIImage(named:"search"), for: .normal)
+        searchWordListBtn.tintColor = #colorLiteral(red: 0, green: 0.4784313725, blue: 1, alpha: 1)
+        let searchWordListBarItem = UIBarButtonItem(customView: searchWordListBtn)
+        let currWidth = searchWordListBarItem.customView?.widthAnchor.constraint(equalToConstant: 24)
+        currWidth?.isActive = true
+        let currHeight = searchWordListBarItem.customView?.heightAnchor.constraint(equalToConstant: 24)
+        currHeight?.isActive = true
+        self.navigationItem.leftBarButtonItem = searchWordListBarItem
+        searchWordListBtn.addTarget(self, action: #selector(self.pushSearchWordListPage), for: UIControl.Event.touchUpInside)
     }
+    
+    @objc func pushSearchWordListPage() {
+        let sb = UIStoryboard(name: "Main", bundle:nil)
+        let vc = sb.instantiateViewController(withIdentifier: "searchWordList") as! SearchWordListViewController
+        
+        //去掉后退键文字
+        let item = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+        self.navigationItem.backBarButtonItem = item
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         getUserWordList()
@@ -54,7 +78,7 @@ class WordListTableViewController: UITableViewController {
     
     func updateUI() {
         self.tableView.reloadData()
-        spinner.stopAnimating()
+        //spinner.stopAnimating()
     }
     
     @objc func clickToAddWordList() {
@@ -183,9 +207,11 @@ class WordListTableViewController: UITableViewController {
             self.semaphore.wait()
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
                 
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                    self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("getUserWordList: \(utf8Text)")
+                    if statusCode == 200 {
+                        self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                    }
                 }
                 
                 self?.semaphore.signal()
@@ -204,13 +230,21 @@ class WordListTableViewController: UITableViewController {
             self.semaphore.wait()
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
                 
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                    self?.userLikedWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("getUserLikedWordList: \(utf8Text)")
+                    if statusCode == 200 {
+                        self?.userLikedWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                    }
                 }
                 
                 DispatchQueue.main.async {
-                    self?.updateUI()
+                    UIView.transition(
+                        with: self!.view,
+                        duration: 0.5,
+                        options: [.transitionCrossDissolve],
+                        animations: {
+                            self?.updateUI()
+                    })
                 }
                 
                 self?.semaphore.signal()

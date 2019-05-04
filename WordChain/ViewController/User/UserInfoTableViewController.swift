@@ -29,23 +29,44 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     
     let scrollBar = UIView()
     
-    let userId = UserDefaults.standard.integer(forKey: "userId")
+    var userId = UserDefaults.standard.integer(forKey: "userId")
     
     var userWordLists = [WordList]()
+    var momentList = [Moment]()
     
     let semaphore = DispatchSemaphore(value: 1)
     
-    var isUserHimself: Bool = true
+    var isUserHimself: Bool {
+        if user == nil {
+            return true
+        } else {
+            return user!.id == userId
+        }
+    }
+    
+    var settingBtn = UIButton()
+    var isFollowed :Bool? = nil {
+        didSet {
+            DispatchQueue.main.async {
+                self.followBtn.setTitle(self.isFollowed ?? false ? "已关注" : "关 注", for: .normal)
+                self.followBtn.titleLabel?.textAlignment = .center
+                self.followBtn.titleLabel?.textColor = UIColor.white
+            }
+        }
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        user = nil
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.shadowImage = UIImage()
         self.navigationController?.navigationBar.barTintColor = UIColor.white
-        self.title = "我"
         
         //设置按钮
-        let settingBtn = UIButton(type: .custom)
+        settingBtn = UIButton(type: .custom)
         settingBtn.frame = CGRect(x: 0.0, y: 0.0, width: 20, height: 20)
         settingBtn.setImage(UIImage(named:"setting"), for: .normal)
         settingBtn.tintColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
@@ -99,18 +120,31 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         
         //创建重用cell
         self.wordListTableView.register(UINib(nibName:"WordListCell", bundle:nil),forCellReuseIdentifier:"wordListCell")
+        self.momentTableView.register(UINib(nibName:"MomentTableViewCell", bundle:nil),forCellReuseIdentifier:"momentCell")
         
-        //TODO 有bug scrollView和TableView的手势问题
+        self.momentTableView.estimatedRowHeight = 136
+        self.momentTableView.rowHeight = 136
+        self.momentTableView.separatorStyle = .none
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        userId = UserDefaults.standard.integer(forKey: "userId")
+        var id: Int
         if isUserHimself {
-            let userId = UserDefaults.standard.integer(forKey: "userId")
-            getUserInfo(userId: userId)
-            getUserWordList(userId: userId)
+            id = userId
+            settingBtn.isHidden = false
+            followBtn.isHidden = true
+            self.title = "我"
         } else {
-            
+            id = user!.id
+            settingBtn.isHidden = true
+            followBtn.isHidden = false
+            self.title = user?.nickname
         }
+        getUserInfo(userId: id)
+        getUserWordList(userId: id)
+        getMoment(userId: id)
+        judgeIsFollowed(userId: userId, followUserId: id)
     }
     
     func updateUI(){
@@ -124,6 +158,21 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         userNameLabel.text = user?.nickname
         
         self.wordListTableView.reloadData()
+        self.momentTableView.reloadData()
+    }
+    
+    @IBAction func followUser(_ sender: Any) {
+        var id: Int
+        if isUserHimself {
+            id = userId
+        } else {
+            id = user!.id
+        }
+        if isFollowed! == true {
+            unfollowUser(userId: userId, followUserId: id)
+        } else {
+            followUser(userId: userId, followUserId: id)
+        }
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -138,39 +187,47 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
             }
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "wordCell", for: indexPath)
-            if let wordCell = cell as? WordCell {
-                wordCell.word = userWordLists[0].words[0]
+            let cell = tableView.dequeueReusableCell(withIdentifier: "momentCell", for: indexPath)
+            if let momentCell = cell as? MomentTableViewCell {
+                momentCell.moment = momentList[indexPath.row]
+                momentCell.selectionStyle = .none
             }
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
+        if tableView == self.wordListTableView {
             return userWordLists.count
         } else {
-            return 10
+            return momentList.count
         }
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-
-    func tableView(_ tableView: UITableView, estimatedHeightForRowAt indexPath: IndexPath) -> CGFloat {
-        return UITableView.automaticDimension
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "showWordListDetail", sender: tableView)
-        wordListTableView.deselectRow(at: indexPath, animated: true)
+        if tableView == wordListTableView {
+            self.performSegue(withIdentifier: "showWordListDetail", sender: tableView)
+            wordListTableView.deselectRow(at: indexPath, animated: true)
+        } else {
+            self.performSegue(withIdentifier: "momentShowWordListDetail", sender: tableView)
+        }
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showWordListDetail" {
             if let indexPath = wordListTableView.indexPathForSelectedRow {
                 let wordList = userWordLists[indexPath.row]
+                
+                let controller = (segue.destination) as! WordListDetailTableViewController
+                controller.wordList = wordList
+                
+                //去掉后退键文字
+                let item = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)
+                self.navigationItem.backBarButtonItem = item
+            }
+        } else if segue.identifier == "momentShowWordListDetail" {
+            if let indexPath = momentTableView.indexPathForSelectedRow {
+                let wordList = momentList[indexPath.row].wordList
                 
                 let controller = (segue.destination) as! WordListDetailTableViewController
                 controller.wordList = wordList
@@ -227,7 +284,6 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
     
     //http://47.103.3.131:5000/getUserInfo
     func getUserInfo(userId: Int) {
-        let userId = UserDefaults.standard.integer(forKey: "userId")
         let parameters = ["user_id": userId]
         let request = "http://47.103.3.131:5000/getUserInfo"
         
@@ -235,11 +291,74 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
             self.semaphore.wait()
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
                 
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                    self?.user = try! JSONDecoder().decode(User.self, from: data)
+                if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("getUserInfo: \(utf8Text)")
+                    if statusCode == 200 {
+                        self?.user = try! JSONDecoder().decode(User.self, from: data)
+                    }
                 }
                 self?.semaphore.signal()
+            }
+        }
+    }
+    
+    // 判断是否被用户关注
+    //http://47.103.3.131:5000/judgeIsFollowed
+    func judgeIsFollowed(userId: Int, followUserId: Int){
+        let parameters = ["user_id": userId, "follow_user_id": followUserId ] as [String : Any]
+        let request = "http://47.103.3.131:5000/judgeIsFollowed"
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let statusCode = response.response?.statusCode {
+                    print("judge follow status code: \(statusCode)")
+                    if statusCode == 200 {
+                        self?.isFollowed = true
+                    } else {
+                        self?.isFollowed = false
+                    }
+                }
+                self?.semaphore.signal()
+            }
+        }
+    }
+    
+    // 关注用户
+    func followUser(userId: Int, followUserId: Int) {
+        let parameters = ["user_id": userId, "follow_user_id": followUserId ]
+        let request = "http://47.103.3.131:5000/followUser"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("follow status code: \(statusCode)")
+                if statusCode == 200 {
+                    self?.isFollowed = true
+                } else {
+                    self?.isFollowed = false
+                }
+            }
+        }
+    }
+    
+    // 取消关注用户
+    func unfollowUser(userId: Int, followUserId: Int) {
+        let parameters = ["user_id": userId, "follow_user_id": followUserId ]
+        let request = "http://47.103.3.131:5000/unFollowUser"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("unfollow status code: \(statusCode)")
+                if statusCode == 200 {
+                    self?.isFollowed = false
+                } else {
+                    self?.isFollowed = true
+                }
             }
         }
     }
@@ -254,11 +373,40 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
             self.semaphore.wait()
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
                 
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
-                    self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("getUserWordList: \(utf8Text)")
+                    if statusCode == 200 {
+                        self?.userWordLists = try! JSONDecoder().decode([WordList].self, from: data)
+                    }
+                }
+                self?.semaphore.signal()
+            }
+        }
+    }
+    
+    //获取moment
+    //http://47.103.3.131:5000/getMoment
+    func getMoment(userId: Int) {
+        let parameters = ["user_id": userId]
+        let request = "http://47.103.3.131:5000/getMoment"
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.semaphore.wait()
+            Alamofire.request(request, method: .post, parameters: parameters).responseJSON { [weak self] response in
+                
+                if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+                    print("getMoment: \(utf8Text)")
+                    if statusCode == 200 {
+                        self?.momentList = try! JSONDecoder().decode([Moment].self, from: data)
+                    }
                     DispatchQueue.main.async {
-                        self?.updateUI()
+                        UIView.transition(
+                            with: self!.view,
+                            duration: 0.5,
+                            options: [.transitionCrossDissolve],
+                            animations: {
+                                self?.updateUI()
+                        })
                     }
                 }
                 self?.semaphore.signal()

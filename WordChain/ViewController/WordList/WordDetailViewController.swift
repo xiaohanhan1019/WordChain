@@ -65,6 +65,12 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
         self.navigationItem.rightBarButtonItem = collectBarItem
         collectBtn.addTarget(self, action: #selector(self.clickToCollect), for: UIControl.Event.touchUpInside)
         
+        if UserDefaults.standard.object(forKey: "userId") == nil {
+            collectBtn.isHidden = true
+        } else {
+            collectBtn.isHidden = false
+        }
+        
         if let html = html , let css = css {
             self.spinner.stopAnimating()
             wordDetailWebView.loadHTMLString("<p style='padding-top:16px;'></p>"+css+html, baseURL: nil)
@@ -196,13 +202,15 @@ class WordDetailViewController: UIViewController ,UITableViewDelegate, UITableVi
         
         Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
             
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+            if let statusCode = response.response?.statusCode, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
                 print("Data: \(utf8Text)")
-                let wordDetailHtml = try! JSONDecoder().decode(WordDetailHtml.self, from: data)
-                self?.html = wordDetailHtml.html
-                self?.css = wordDetailHtml.css
-                DispatchQueue.main.async {
-                    self?.configureView()
+                if statusCode == 200 {
+                    let wordDetailHtml = try! JSONDecoder().decode(WordDetailHtml.self, from: data)
+                    self?.html = wordDetailHtml.html
+                    self?.css = wordDetailHtml.css
+                    DispatchQueue.main.async {
+                        self?.configureView()
+                    }
                 }
             }
         }

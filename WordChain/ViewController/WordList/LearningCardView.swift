@@ -99,7 +99,7 @@ class LearningCardView: UIView, UITableViewDataSource, UIGestureRecognizerDelega
                 self.addSubview(similarLabel)
             
                 // 创建similarWordTableView
-                similarWordTableView = UITableView(frame: CGRect(x: 0, y: 240, width: self.bounds.maxX, height: 120), style:.plain)
+                similarWordTableView = UITableView(frame: CGRect(x: 0, y: 240, width: self.bounds.maxX, height: 180), style:.plain)
                 similarWordTableView.dataSource = self
                 similarWordTableView.delegate = self
                 // 注册cell

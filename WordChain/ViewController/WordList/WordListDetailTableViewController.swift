@@ -37,7 +37,23 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         return wordList!.user_id == UserDefaults.standard.integer(forKey: "userId")
     }
     
-    var userLikeThisWordList: Bool? = nil
+    var userLikeThisWordList: Bool? = nil {
+        didSet {
+            DispatchQueue.main.async {
+                UIView.transition(
+                    with: self.likeBtn,
+                    duration: 0.5,
+                    options: [.transitionCrossDissolve],
+                    animations: {
+                        if self.userOwnThisWordList {
+                            self.likeBtn.setImage(UIImage(named: "like"), for: .normal)
+                        } else {
+                            self.likeBtn.setImage(UIImage(named: self.userLikeThisWordList ?? false ? "like" : "heart_empty"), for: .normal)
+                        }
+                })
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -66,15 +82,25 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         
         //调接口判断用户是否收藏了该词单
         let userId = UserDefaults.standard.integer(forKey: "userId")
-        if userId == wordList?.user_id {
+        if userOwnThisWordList {
             updateUI()
+            userLikeThisWordList = true
         } else {
             judgeIfUserLiked(userId: userId, wordListId: wordList!.id)
         }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(false, animated: true)
+        
+        if UserDefaults.standard.object(forKey: "userId") == nil {
+            likeBtn.isHidden = true
+            learnBtn.isHidden = true
+        } else {
+            likeBtn.isHidden = false
+            learnBtn.isHidden = false
+        }
     }
     
     func updateUI() {
@@ -91,22 +117,15 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         wordListNameLabel.text = wordList?.name
         wordListInfoLabel.text = wordList?.description
         wordListOwnerNameLabel.text = wordList?.ownerName
-        
-        if userOwnThisWordList {
-            likeBtn.setImage(UIImage(named: "like"), for: .normal)
-        } else if userLikeThisWordList ?? false {
-            likeBtn.setImage(UIImage(named: "like"), for: .normal)
-        } else {
-            likeBtn.setImage(UIImage(named: "heart_empty"), for: .normal)
-        }
     }
     
     @IBAction func clickToCollect(_ sender: Any) {
+        let userId = UserDefaults.standard.integer(forKey: "userId")
         if !userOwnThisWordList {
             if userLikeThisWordList! {
-                //取消收藏
+                unlikeWordList(userId: userId, wordListId: wordList!.id)
             } else {
-                //收藏
+                likeWordList(userId: userId, wordListId: wordList!.id)
             }
         }
     }
@@ -204,7 +223,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
             self.sortWord()
         }
         let deleteWordListAction = UIAlertAction(title: "删除词单", style: .destructive){ (action:UIAlertAction) in
-            self.deleteWordList()
+            self.alertDeleteWordList()
         }
         
         alert.addAction(sortWordAction)
@@ -215,6 +234,20 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         
         alert.addAction(cancelAction)
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func alertDeleteWordList() {
+        let alertController = UIAlertController(title: "真的要删除吗？", message: "", preferredStyle: .alert)
+        
+        let cancelAction = UIAlertAction(title: "取消", style: .cancel, handler: nil)
+        let okAction = UIAlertAction(title: "确定", style: .default) {
+            (action: UIAlertAction!) -> Void in
+            self.deleteWordList()
+        }
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func deleteWordList() {
@@ -270,11 +303,23 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         let cleanAction = UIAlertAction(title: "取消", style: UIAlertAction.Style.cancel,handler:nil)
         let sortByWordName = UIAlertAction(title: "按字典序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
             self.wordList?.words.sort(by: {(word1: Word, word2: Word) -> Bool in return word1.name < word2.name })
-            self.tableView.reloadData()
+            UIView.transition(
+                with: self.tableView,
+                duration: 0.5,
+                options: [.transitionCrossDissolve],
+                animations: {
+                    self.tableView.reloadData()
+            })
         }
         let sortByRandom = UIAlertAction(title: "随机乱序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
             self.wordList?.words.shuffle()
-            self.tableView.reloadData()
+            UIView.transition(
+                with: self.tableView,
+                duration: 0.5,
+                options: [.transitionCrossDissolve],
+                animations: {
+                    self.tableView.reloadData()
+            })
         }
         let sortBySimilarity = UIAlertAction(title: "按相似度排序", style: UIAlertAction.Style.default){ (action:UIAlertAction) in
             self.sortWordBySimilarity()
@@ -295,7 +340,7 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
         Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
             
             if let statusCode = response.response?.statusCode {
-                print("judge status code: \(statusCode)")
+                print("judge like status code: \(statusCode)")
                 if statusCode == 200 {
                     self?.userLikeThisWordList = true
                 } else {
@@ -364,16 +409,60 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
                         print("statusCode: \(response.statusCode)")
                     }
                     if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                        print("data: \(dataString)")
+                        print("similar sort: \(dataString)")
                         self?.wordList?.words = try! JSONDecoder().decode([Word].self, from: data)
                         DispatchQueue.main.async {
-                            self?.tableView.reloadData()
+                            UIView.transition(
+                                with: self!.tableView,
+                                duration: 0.5,
+                                options: [.transitionCrossDissolve],
+                                animations: {
+                                    self?.tableView.reloadData()
+                            })
                         }
                     }
                     
                 })
                 
                 task.resume()
+            }
+        }
+    }
+    
+    // 收藏词单
+    func likeWordList(userId: Int, wordListId: Int) {
+        let parameters = ["user_id": userId, "wordList_id": wordListId]
+        let request = "http://47.103.3.131:5000/likeWordList"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("like wordList status code: \(statusCode)")
+                if statusCode == 200 {
+                    self?.userLikeThisWordList = true
+                } else {
+                    self?.userLikeThisWordList = false
+                }
+            }
+        }
+    }
+    
+    // 取消收藏词单
+    func unlikeWordList(userId: Int, wordListId: Int) {
+        let parameters = ["user_id": userId, "wordList_id": wordListId]
+        let request = "http://47.103.3.131:5000/dislikeWordList"
+        let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
+        
+        Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
+            
+            if let statusCode = response.response?.statusCode {
+                print("like wordList status code: \(statusCode)")
+                if statusCode == 200 {
+                    self?.userLikeThisWordList = false
+                } else {
+                    self?.userLikeThisWordList = true
+                }
             }
         }
     }

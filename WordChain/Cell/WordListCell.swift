@@ -50,7 +50,7 @@ class WordListCell: UITableViewCell {
 }
 
 extension UIImageView {
-    func downloadedFrom(url: URL, contentMode mode: UIView.ContentMode = .scaleAspectFit, cornerRadius: CGFloat) {
+    func downloadedFrom(url: URL, contentMode mode: UIView.ContentMode = .scaleAspectFit, cornerRadius: CGFloat, ratio: CGFloat) {
         contentMode = mode
         
         DispatchQueue.global(qos: .background).async {
@@ -62,17 +62,17 @@ extension UIImageView {
                     let image = UIImage(data: data)
                     else { return }
                 DispatchQueue.main.async() {
-                    self.image = image.crop(ratio: 1)
                     // 圆角图片
                     self.layer.cornerRadius = cornerRadius
                     self.clipsToBounds = true
+                    self.image = image.crop(ratio: ratio)
                 }
             }
         }
     }
-    func downloadedFrom(link: String, cornerRadius: CGFloat, contentMode mode: UIView.ContentMode = .scaleAspectFit) {
+    func downloadedFrom(link: String, cornerRadius: CGFloat, contentMode mode: UIView.ContentMode = .scaleAspectFit, ratio: CGFloat = 1.0) {
         guard let url = URL(string: link) else { return }
-        downloadedFrom(url: url, contentMode: mode, cornerRadius: cornerRadius)
+        downloadedFrom(url: url, contentMode: mode, cornerRadius: cornerRadius, ratio: ratio)
     }
 }
 
