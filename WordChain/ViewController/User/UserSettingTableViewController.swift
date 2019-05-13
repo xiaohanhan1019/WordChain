@@ -27,6 +27,8 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
     @IBOutlet weak var userNicknameLabel: UILabel!
     @IBOutlet weak var userStatusLabel: UILabel!
     
+    var controller: UserInfoTableViewController? = nil
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -41,6 +43,7 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
     @IBAction func logout(_ sender: Any) {
         // TODO 这样退出登录后 如果按左上角叉 获取不到userId会闪退
         UserDefaults.standard.removeObject(forKey: "userId")
+        controller?.user = nil
         // 显示登录页
         let sb = UIStoryboard(name: "Main", bundle:nil)
         let vc = sb.instantiateViewController(withIdentifier: "login") as! UINavigationController
@@ -165,7 +168,8 @@ class UserSettingTableViewController: UITableViewController, paramNicknameDelega
         
         Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
             
-            if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
+            let statusCode = response.response?.statusCode
+            if statusCode == 200, let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
                 print("Data: \(utf8Text)")
                 self?.user = try! JSONDecoder().decode(User.self, from: data)
                 DispatchQueue.main.async {

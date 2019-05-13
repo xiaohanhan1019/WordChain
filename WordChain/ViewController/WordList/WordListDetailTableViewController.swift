@@ -407,18 +407,20 @@ class WordListDetailTableViewController: UITableViewController, paramWordListDel
                     
                     if let response = response as? HTTPURLResponse {
                         print("statusCode: \(response.statusCode)")
-                    }
-                    if let data = data, let dataString = String(data: data, encoding: .utf8) {
-                        print("similar sort: \(dataString)")
-                        self?.wordList?.words = try! JSONDecoder().decode([Word].self, from: data)
-                        DispatchQueue.main.async {
-                            UIView.transition(
-                                with: self!.tableView,
-                                duration: 0.5,
-                                options: [.transitionCrossDissolve],
-                                animations: {
-                                    self?.tableView.reloadData()
-                            })
+                        if response.statusCode == 200 {
+                            if let data = data, let dataString = String(data: data, encoding: .utf8) {
+                                print("similar sort: \(dataString)")
+                                self?.wordList?.words = try! JSONDecoder().decode([Word].self, from: data)
+                                DispatchQueue.main.async {
+                                    UIView.transition(
+                                        with: self!.tableView,
+                                        duration: 0.5,
+                                        options: [.transitionCrossDissolve],
+                                        animations: {
+                                            self?.tableView.reloadData()
+                                    })
+                                }
+                            }
                         }
                     }
                     

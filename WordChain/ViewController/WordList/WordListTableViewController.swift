@@ -197,7 +197,6 @@ class WordListTableViewController: UITableViewController {
     
     //获取用户创建的单词表
     //http://47.103.3.131:5000/getAllUserWordList
-    // 应该可以同时获取数据,但python那边有些问题,所以这里用信号量实现串行
     func getUserWordList() {
         let userId = UserDefaults.standard.integer(forKey: "userId")
         let parameters = ["user_id": userId]

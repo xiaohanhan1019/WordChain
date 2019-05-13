@@ -55,10 +55,6 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         }
     }
     
-    override func viewWillDisappear(_ animated: Bool) {
-        user = nil
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -274,6 +270,9 @@ class UserInfoTableViewController: UIViewController, UITableViewDataSource, UITa
         let vc = sb.instantiateViewController(withIdentifier: "userSetting") as! UserSettingTableViewController
         vc.user = user
         vc.userImage = userImageView.image
+        
+        // 强行
+        vc.controller = self
         
         //去掉后退键文字
         let item = UIBarButtonItem(title: "", style: .plain, target: self, action: nil)

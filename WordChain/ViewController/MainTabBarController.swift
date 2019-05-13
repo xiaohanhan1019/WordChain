@@ -54,6 +54,9 @@ class MainTabBarController: UITabBarController , UITabBarControllerDelegate {
                 self.viewControllers![selectedIndex].present(vc, animated: true, completion: nil)
                 return false
             } else {
+                if let viewController = viewController as? UserInfoTableViewController {
+                    viewController.user = nil
+                }
                 return true
             }
         }

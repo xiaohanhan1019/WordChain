@@ -84,55 +84,27 @@ class EditWordListTableViewController: UITableViewController, UIImagePickerContr
     
     // 选择图片成功后代理
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
         //获取选择的原图
         let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as! UIImage
         let imageData = pickedImage.jpegData(compressionQuality: 0.3)
-        
         if let imageBase64String = imageData?.base64EncodedString() {
-            // postImage
             let wordListId = wordList?.id
             let parameters = ["image": imageBase64String, "wordList_id": wordListId!] as [String : Any]
             let request = "http://47.103.3.131:5000/postWordListImage"
             let queue = DispatchQueue(label: "com.wordchain.api", qos: .userInitiated, attributes: .concurrent)
-            
             Alamofire.request(request, method: .post, parameters: parameters).responseJSON(queue: queue) { [weak self] response in
                 
                 if let statusCode = response.response?.statusCode {
                     if statusCode == 200 {
                         DispatchQueue.main.async {
-                            picker.dismiss(animated: true) {
-                                let alertToast = UIAlertController(title: "修改成功", message: nil, preferredStyle: .alert)
-                                self?.present(alertToast, animated: true) {
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
-                                        alertToast.dismiss(animated: true) {
-                                            // 修改头像
-                                            self?.delegate?.returnWordListInfo(name: (self?.wordList!.name)!, description: (self?.wordList!.description)!, cover: pickedImage)
-                                            self?.wordListCoverImageView.image = pickedImage.crop(ratio: 1.0)
-                                            self?.wordListCoverImageView.layer.cornerRadius = 60
-                                            self?.wordListCoverImageView.clipsToBounds = true
-                                        }
-                                    }
-                                }
-                            }
+                            ...//操作成功弹窗提示并更新UI
                         }
                     }
                     else {
                         DispatchQueue.main.async {
-                            picker.dismiss(animated: true) {
-                                let alertToast = UIAlertController(title: "修改失败", message: nil, preferredStyle: .alert)
-                                self?.present(alertToast, animated: true) {
-                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3) {
-                                        alertToast.dismiss(animated: true, completion: nil)
-                                    }
-                                }
-                            }
+                            ...//操作失败弹窗提示
                         }
                     }
-                }
-                
-                if let data = response.data, let utf8Text = String(data: data, encoding: .utf8) {
-                    print("Data: \(utf8Text)")
                 }
             }
         }
