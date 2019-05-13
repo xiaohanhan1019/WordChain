@@ -25,7 +25,7 @@
 
 ![user_info](screenshots/user_info.JPG)
 
-左右的滑动标签页做的有点僵硬，右上角可以修改个人信息，头像。头像将图片资源转换成`base64string`再通过接口传送给后端，后端`Python`将`base64string`转换为图片存储在服务器上。服务器部署了`Nginx`，使得图片资源可以通过`URL`来访问，所以头像只需在`UIImageView`加载`URL`图片就行了。
+左右的滑动标签页做的有点僵硬，右上角可以修改个人信息，头像。头像将图片资源转换成`base64string`再通过接口传送给后端，后端Python将`base64string`转换为图片存储在服务器上。服务器部署了`Nginx`，使得图片资源可以通过URL来访问，所以头像只需在UIImageView加载URL图片就行了。
 
 ### 词单页
 
@@ -52,4 +52,5 @@
 ![learn_example](screenshots/learn_example.JPG)
 
 很多代码实现的比较强行...看看就好
+
 以上
