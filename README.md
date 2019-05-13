@@ -17,6 +17,7 @@
 ![word_detail](screenshots/word_detail.png)
 
 后端解析了柯林斯词典mdx文件，传送html及css数据到iOS端，iOS通过webview显示。
+
 播放音频调用了金山词霸的API，右上角收藏按钮可以收藏单词到词单。
 
 ![word_detail_collect](screenshots/word_detail_collect.png)
@@ -32,6 +33,7 @@
 ![wordList](screenshots/wordList.png)
 
 用户可以创建自己的词单，也可能收藏别人的词单（你可以将词单看作网易云的歌单，初衷就是想把词单做成歌单那样可以分享
+
 左上角查询，右上角创建新词单。
 
 ### 词单详细页
@@ -39,6 +41,7 @@
 ![wordList_detail](screenshots/wordList_detail.png)
 
 右上角编辑键可以对词单进行信息编辑，当然只有词单创建者可以修改。
+
 可以更改单词排序，其中按照相似度排序是基于`word2vec`词向量计算工具和`LCS最长公共子序列`，`word2vec`基于单词语义给出相似度，`LCS`基于单词形似给出相似度。这样的话，举个例子，比如你的词单中有claim，exclaim，proclaim，declaim这种形近或者义近的单词就可以连在一起（这也是起名WordChain的意义
 
 ### 学习页
@@ -46,7 +49,9 @@
 ![learn](screenshots/learn.JPG)
 
 单词学习页，通过在词单详细页点击`开始学习`进入。
+
 点击单词卡片的空白部分，单词卡片会旋转，显示单词的详细页（即右边）。
+
 下方的相似单词是基于`word2vec`推荐的，对于高频词来说，效果还是比较好的，见下图
 
 ![learn_example](screenshots/learn_example.JPG)
