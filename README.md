@@ -8,19 +8,19 @@
 
 ### 首页
 
-![home_page](screenshots/home_page.png)
+![home_page](screenshots/home_page.PNG)
 
 上方调用了扇贝每日一句API，下方纯属充数（其实就是随机显示关注用户的词单
 
 ### 单词详细页
 
-![word_detail](screenshots/word_detail.png)
+![word_detail](screenshots/word_detail.PNG)
 
 后端解析了柯林斯词典mdx文件，传送html及css数据到iOS端，iOS通过webview显示。
 
 播放音频调用了金山词霸的API，右上角收藏按钮可以收藏单词到词单。
 
-![word_detail_collect](screenshots/word_detail_collect.png)
+![word_detail_collect](screenshots/word_detail_collect.PNG)
 
 ### 个人信息页
 
@@ -30,7 +30,7 @@
 
 ### 词单页
 
-![wordList](screenshots/wordList.png)
+![wordList](screenshots/wordList.PNG)
 
 用户可以创建自己的词单，也可能收藏别人的词单（你可以将词单看作网易云的歌单，初衷就是想把词单做成歌单那样可以分享
 
@@ -38,7 +38,7 @@
 
 ### 词单详细页
 
-![wordList_detail](screenshots/wordList_detail.png)
+![wordList_detail](screenshots/wordList_detail.PNG)
 
 右上角编辑键可以对词单进行信息编辑，当然只有词单创建者可以修改。
 
