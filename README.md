@@ -16,7 +16,7 @@
 
 ![word_detail](screenshots/word_detail.png)
 
-后端解析了柯林斯词典mdx文件，传送html及css数据到iOS端，iOS通过webview显示。
+后端解析了柯林斯词典mdx文件，传送html及css到iOS端，iOS通过webview显示。
 
 播放音频调用了金山词霸的API，右上角收藏按钮可以收藏单词到词单。
 
@@ -38,7 +38,7 @@
 
 ### 词单详细页
 
-![wordList_detail](screenshots/wordList_detail.png)
+![wordList_detail](screenshots/wordlist_detail.png)
 
 右上角编辑键可以对词单进行信息编辑，当然只有词单创建者可以修改。
 
